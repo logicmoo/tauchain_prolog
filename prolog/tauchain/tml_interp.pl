@@ -9,8 +9,9 @@ run_tml(String):-
  into_codes_list(String, Chars),
  parse_tml(Chars, ExprsVs),
  show_tml_read(ExprsVs),!,
- dmsg(failed("===SUCESSS====================")),!.
-run_tml(_):- dmsg(failed("===FAILED====================")),!.
+ dmsg("===SUCESSS===================="),!.
+run_tml(_):- 
+ dmsg(failed("===FAILED====================")),!.
 
 
 

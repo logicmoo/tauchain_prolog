@@ -28,9 +28,9 @@ parse_tml(String, ExprsVs) :-
   parse_tml(file_lineS, String, ExprsVs).
 
 parse_tml(Pred, String, ExprsVs) :- 
- into_codes_list(String, CodesL), 
+ notrace((into_codes_list(String, CodesL), 
  append(CodesL,[10],Codes),
- PPred =.. [Pred,Exprs],
+ PPred =.. [Pred,Exprs])),
  phrase(PPred, Codes),
  intro_vars(Exprs,ExprsVs,_).
 
@@ -86,8 +86,8 @@ single_arg(N) --> wsp,! , single_arg(N).
 single_arg(N)       --> tnumber(N).
 single_arg(Text)    --> `"`, !, always(s_string_cont(`"`,Text)),!.
 single_arg((List))  --> `(`, !, arg_list(wstc,List), `)`.
-single_arg(X) --> pred_expr(X).
-single_arg(A)       --> symbol(A).
+single_arg(A)       --> symbol(A),!.
+single_arg(X)       --> pred_expr(X).
 
 item(Pred) --> ws,Pred,ws.
 
@@ -98,6 +98,7 @@ pred_expr(Pred)    --> symbol(Cs), wst, arg_list(wst,List), {List\==[]}, {univ_h
 pred_expr(not(A))  --> item(`~`),!,pred_expr(A).
 pred_expr(A)       --> symbol(A).
 
+univ_holds(Pred,[Cs,Holds]):-compound(Holds),Holds=..[holds|List],!,univ_holds(Pred,[Cs|List]).
 univ_holds(Pred,[Cs|List]):- atom(Cs),!,Pred =.. [Cs|List].
 univ_holds(Pred,[Cs|List]):- Pred =.. [holds,Cs|List].
 
@@ -164,6 +165,7 @@ show_tml_read(X):- is_list(X),!, maplist(show_tml_read,X).
 show_tml_read(X):- format('~NTML: ~q.~n',X).
 
 %:- [qvar_rewriter].
+:- if((current_prolog_flag(os_argv,X),member('tml_reader.pl',X))).
 
 :- test_tml_r("  
 e(1 2).
@@ -217,7 +219,21 @@ r.}
 :- test_tml_r(" !! e ?x v1. ").
 :- test_tml_r(" ! e ?x v1. ").
 
-end_of_file.
+:- test_tml_r(`father Tom Amy.
+father Jack Fred.
+father Tony CarolII.
+father Fred CarolIII.
+
+mother Grace Amy.
+mother Amy Fred.
+mother CarolI CarolII.
+mother CarolII CarolIII.
+
+parent ?X ?Y :- father ?X ?Y.
+parent ?X ?Y :- mother ?X ?Y.
+ancestor ?X ?Y :- parent ?X ?Y.
+ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
+
 
 
 :- test_tml_r(" 
@@ -247,6 +263,10 @@ end_of_file.
 ").
 
 
+
+:- endif.
+
+end_of_file.
 
 end_of_file.
 

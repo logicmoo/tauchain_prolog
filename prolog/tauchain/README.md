@@ -2,32 +2,7 @@ READER TEST RESULTS
 
 ````
 
-TML: e(1,2).
-TML: e(2,1).
-TML: e(holds(X,Y)):-e(holds(X,Z)),e(holds(Z,Y)).
-TML: not('S'(holds(X,X))):-'S'(holds(X,X)).
-TML: not(prog(holds(X,X))):-prog(holds(X,X)).
-TML: not(alt(holds(X,X))):-alt(holds(X,X)).
-TML: not(alts(holds(X,X))):-alts(holds(X,X)).
-TML: a(b(c)).
-TML: a(b(c)).
-TML: a(1,2,3).
-TML: rel(t,1,2).
-TML: b(X).
-TML: '@trace'(foo).
-TML: '@trace'(bar).
-TML: r.
-TML: HI.
-TML: '@treequery'(rel(t,1,2)).
-TML: '@ask'(rel(t,1,2)).
-TML: a(b(c)).
-TML: a(b(c)).
-TML: '@finline'([a(1,2,3),rel(t,holds('$VAR'('1'),2)),b(X),r]).
-TML: '@treequery'(rel(t,1,2)).
-TML: '@ask'(rel(t,1,2)).
-TML: '@treequery'(e(holds(X,v1))).
-TML: '@ask'(e(holds(X,v1))).
-% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl:32
+% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl:33
 % ==============================
 % ==============================
 % ==============================
@@ -59,7 +34,7 @@ TML: '@comment'("").
 TML: '@comment'(" Clauses can be either FACTS or RULES and").
 TML: '@comment'(" they are terminated by the '.' character").
 TML: '@comment'(" like sentences in English.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -145,14 +120,14 @@ TML: beginsWithJ('Jack').
 TML: '@comment'(" |____Jack_____|").
 TML: '@comment'("  _____________").
 TML: '@comment'(" |___uncle_____|").
-TML: uncle('Jim'('Joe')).
+TML: uncle('Jim','Joe').
 TML: '@comment'(" |  Jim | Joe  |").
-TML: uncle('Joe'('Jill')).
+TML: uncle('Joe','Jill').
 TML: '@comment'(" |  Joe | Jill |").
-TML: uncle('Joe'('Jack')).
+TML: uncle('Joe','Jack').
 TML: '@comment'(" |__Joe_|_Jack_|").
-TML: employee('John'('Doe'(sales))).
-TML: employee('Jane'('Doe'(support))).
+TML: employee('John','Doe',sales).
+TML: employee('Jane','Doe',support).
 TML: '@comment'("  ______________________").
 TML: '@comment'(" |______employee________|").
 TML: '@comment'(" | John | Doe | sales   |").
@@ -165,7 +140,7 @@ TML: '@comment'(" It's a difference from common relational").
 TML: '@comment'(" databases where columns are named.").
 TML: '@comment'("").
 TML: '@comment'(" Number of columns is also called ARITY.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -221,11 +196,11 @@ TML: '@comment'(" 1-ary (unary/monadic)").
 TML: happy('Sue').
 TML: barks('Max').
 TML: '@comment'(" 2-ary (binary/dyadic)").
-TML: mother('Jane'('Jack')).
-TML: employee('John'('Doe')).
+TML: mother('Jane','Jack').
+TML: employee('John','Doe').
 TML: '@comment'(" 3-ary (ternary/triadic)").
-TML: married('Tom'('Jane'(2004))).
-TML: employee('Jane'('Doe'(support))).
+TML: married('Tom','Jane',2004).
+TML: employee('Jane','Doe',support).
 TML: '@comment'(" ...").
 TML: '@comment'(" 6-ary (senary)").
 TML: a(1,2,3,4,5,6).
@@ -233,7 +208,7 @@ TML: '@comment'(" 2-ary or more are also").
 TML: '@comment'(" called multiary/polyadic").
 TML: '@comment'(" Output of TML is padded by '*' character").
 TML: '@comment'(" up to the highest known arity.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -363,26 +338,26 @@ TML: '@comment'(" TML infers that Charlie and Coco beeps.").
 TML: meows(SOME):-cat(SOME).
 TML: '@comment'(" If there is some cat, it meows.").
 TML: '@comment'(" TML infers that Bella meows.").
-TML: employee('Suzi'(female)).
-TML: employee('John'(male)).
-TML: employee('Jane'(female)).
-TML: salutation(holds(PERSON,'Madam')):-employee(holds(PERSON,female)).
+TML: employee('Suzi',female).
+TML: employee('John',male).
+TML: employee('Jane',female).
+TML: salutation(PERSON,'Madam'):-employee(PERSON,female).
 TML: '@comment'(" salutation for any employee female is Madam.").
 TML: '@comment'(" TML infers that Suzi's and Jane's salutation").
 TML: '@comment'(" is Madam.").
-TML: salutation(holds(PERSON,'Sir')):-employee(holds(PERSON,male)).
+TML: salutation(PERSON,'Sir'):-employee(PERSON,male).
 TML: '@comment'(" salutation for any employee male is Sir").
 TML: '@comment'(" TML infers that John's salutation is Sir.").
-TML: parent(holds(X,Y)):-father(holds(X,Y)).
-TML: parent(holds(X,Y)):-mother(holds(X,Y)).
-TML: father('Coco'('Charlie')).
-TML: mother('Suzi'('John')).
+TML: parent(X,Y):-father(X,Y).
+TML: parent(X,Y):-mother(X,Y).
+TML: father('Coco','Charlie').
+TML: mother('Suzi','John').
 TML: '@comment'(" TML infers that Coco is Charlie's parent.").
 TML: '@comment'(" and that Suzi is John's parent.").
 TML: '@comment'(" Just for fun, let's say, John is a bird:").
 TML: bird('John').
 TML: '@comment'(" TML infers that John beeps and he can fly.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -450,7 +425,7 @@ TML: '@comment'(" TML infers: Jack and John are boys.").
 TML: '@comment'(" Jane and Suzi are girls.").
 TML: '@comment'(" And Amy, Jack, Jane, John and Suzi are").
 TML: '@comment'(" humans.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -493,11 +468,11 @@ TML: '@comment'(" Recursion is used to traverse through").
 TML: '@comment'(" all the entities in a relation.").
 TML: '@comment'(" It's a logic programs' alternative to loops.").
 TML: '@comment'(" We can have a relation of parents.").
-TML: parent('Fred'('Sue')).
-TML: parent('Jack'('Fred')).
-TML: parent('Amy'('Fred')).
-TML: parent('Grace'('Amy')).
-TML: parent('Tom'('Amy')).
+TML: parent('Fred','Sue').
+TML: parent('Jack','Fred').
+TML: parent('Amy','Fred').
+TML: parent('Grace','Amy').
+TML: parent('Tom','Amy').
 TML: '@comment'(" Let's say we want to know all the ancestor").
 TML: '@comment'(" relations of all the known entities.").
 TML: '@comment'(" We need to create 2 rules so TML knows,").
@@ -505,14 +480,14 @@ TML: '@comment'(" what ancestor means. Ancestor is a parent").
 TML: '@comment'(" or a parent of an ancestor.").
 TML: '@comment'(" 'parent of a child is an ancestor of the").
 TML: '@comment'(" child':").
-TML: ancestor(holds(ANC,CHILD)):-parent(holds(ANC,CHILD)).
+TML: ancestor(ANC,CHILD):-parent(ANC,CHILD).
 TML: '@comment'(" 'parent of a child, who is an ancestor of").
 TML: '@comment'(" its descendant, is an ancestor of the").
 TML: '@comment'(" descendant':").
-TML: ancestor(holds(ANC,DESC)):-parent(holds(ANC,CHILD)),ancestor(holds(CHILD,DESC)).
+TML: ancestor(ANC,DESC):-parent(ANC,CHILD),ancestor(CHILD,DESC).
 TML: '@comment'(" Notice how ancestor relation is used in both").
 TML: '@comment'(" head and body. This is causing the recursion.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -564,15 +539,15 @@ TML: e(3,4).
 TML: e(4,5).
 TML: e(5,1).
 TML: e(8,9).
-TML: tc(holds(X,Y)):-e(holds(X,Y)).
+TML: tc(X,Y):-e(X,Y).
 TML: '@comment'(" Edge from ?x to ?y is a path from ?x to ?y.").
-TML: tc(holds(X,Y)):-tc(holds(X,Z)),e(holds(Z,Y)).
+TML: tc(X,Y):-tc(X,Z),e(Z,Y).
 TML: '@comment'(" If there is a path from ?x to ?z and there").
 TML: '@comment'(" is an edge from ?z to ?y there is path from").
 TML: '@comment'(" ?x to ?y").
 TML: '@comment'(" TML infers all the possible paths in the").
 TML: '@comment'(" 'e' graph into 'tc' graph.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -597,7 +572,7 @@ TML: '@comment'(" or simply: Not wounded bird can fly.").
 TML: '@comment'(" Coco and Charlie are birds but Charlie is").
 TML: '@comment'(" wounded. The only fact TML can infer here").
 TML: '@comment'(" is that Coco can fly.").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -636,22 +611,22 @@ TML: '@comment'(" is that Coco can fly.").
 % # from Datalog Educational System
 % # http://des.sourceforge.net/
 % ===PROCESS====================
-TML: father('Tom'('Amy')).
-TML: father('Jack'('Fred')).
-TML: father('Tony'('CarolII')).
-TML: father('Fred'('CarolIII')).
-TML: mother('Grace'('Amy')).
-TML: mother('Amy'('Fred')).
-TML: mother('CarolI'('CarolII')).
-TML: mother('CarolII'('CarolIII')).
-TML: parent(holds(X,Y)):-father(holds(X,Y)).
-TML: parent(holds(X,Y)):-mother(holds(X,Y)).
-TML: ancestor(holds(X,Y)):-parent(holds(X,Y)).
-TML: ancestor(holds(X,Y)):-parent(holds(X,Z)),ancestor(holds(Z,Y)).
+TML: father('Tom','Amy').
+TML: father('Jack','Fred').
+TML: father('Tony','CarolII').
+TML: father('Fred','CarolIII').
+TML: mother('Grace','Amy').
+TML: mother('Amy','Fred').
+TML: mother('CarolI','CarolII').
+TML: mother('CarolII','CarolIII').
+TML: parent(X,Y):-father(X,Y).
+TML: parent(X,Y):-mother(X,Y).
+TML: ancestor(X,Y):-parent(X,Y).
+TML: ancestor(X,Y):-parent(X,Z),ancestor(Z,Y).
 TML: '@comment'(" This example is taken").
 TML: '@comment'(" from Datalog Educational System").
 TML: '@comment'(" http://des.sourceforge.net/").
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -707,7 +682,7 @@ TML: not(bird(X)):-dead(X).
 TML: not(human(X)):-dead(X).
 TML: not(mortal(X)):-dead(X).
 TML: not(being(X)):-dead(X).
-% failed("===SUCESSS====================").
+% ===SUCESSS====================
 % ==============================
 % ==============================
 % ==============================
@@ -730,9 +705,8 @@ TML: not(being(X)):-dead(X).
 % failed("===FAILED====================").
 % init_why(after('/opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl')).
 % init_why(program).
-?- ^D
-% halt
-(base) root@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain#
+?-
 
 
 ````
+
