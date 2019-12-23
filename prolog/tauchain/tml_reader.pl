@@ -12,7 +12,6 @@ null --> ``.
 optional(X) --> X ; null.
 some(P) --> (P, optional(some(P))),!.
 
-into_comment(T,'@comment'(S)) --> ws, {text_to_string_always(T,S)}.
 
 :- set_prolog_flag(back_quotes, codes).
 
@@ -46,13 +45,15 @@ file_lineS([]) --> ws.
 
 file_line(Head) --> item(file_1line(Head)),optional(`.`).
 
-file_1line(S) --> `#`,!,read_string_until_no_esc(T,eoln),into_comment(T,S).
-file_1line(S) --> `/*`,!,read_string_until_no_esc(T,`*/`),into_comment(T,S).
+comment(T) --> `#`,!,read_string_until_no_esc(T,eoln).
+comment(T) --> `/*`,!,read_string_until_no_esc(T,`*/`).
+
+file_1line('@comment'(S)) --> comment(T), {text_to_string_always(T,S)}.
 file_1line('@finline'(S)) --> `{`,!,file_lineS(S),`}`.
 file_1line('@treequery'(A))       --> item(`!!`),!,pred_expr(A).
 file_1line('@ask'(A))       --> item(`!`),!,pred_expr(A).
 file_1line('@trace'(A))       --> item(`@trace`),!,ws,symbol(A).
-file_1line(HeadBody) --> pred_expr(Head), `:-`, expr_list(Body), {list_to_conjuncts(Body,Conj),HeadBody =.. [(':-'),Head,Conj]}.
+file_1line(HeadBody) --> pred_expr(Head), item(`:-`), expr_list(Body), {list_to_conjuncts(Body,Conj),HeadBody =.. [(':-'),Head,Conj]}.
 file_1line(Head) --> pred_expr(Head).
 
 
@@ -75,9 +76,13 @@ expr_list([]) --> (`.`; ws).
 
 
 
-eoln --> code_type(end_of_line).
+eoln --> code_type(end_of_line),!.
+eoln --> [_],!,{fail}.
+eoln --> ``.
+
 ws --> some(wsp);null.
 wsp --> code_type(space).
+wsp --> comment(_).
 wst --> some(` `;`\t`),!, ws.
 wstc --> ws,(`,`; wst).
 
@@ -104,6 +109,7 @@ univ_holds(Pred,[Cs|List]):- Pred =.. [holds,Cs|List].
 
 symbol(_) --> `:`, !, {fail}.
 symbol(Atom) --> `'`, always(s_string_cont(`'`,Text)),!, {atom_string(Atom,Text)}.
+symbol(N) --> tnumber(N).
 symbol('$VAR'(UAtom)) --> `?`,symbolr(Codes),!,{atom_codes(Atom,Codes),upcase_atom(Atom,UAtom)}.
 symbol(Atom) --> quietly((symbolc(Codes),!,{atom_codes(Atom,Codes)})).
 symbolc([A|As]) -->
@@ -113,7 +119,7 @@ symbolc([A|As]) -->
 
 symbolr([A|As]) -->
     [A],
-    { memberchk(A, `+/-*><=`) ; code_type(A, alnum) },
+    { memberchk(A, `+/-*><=_`) ; code_type(A, alnum) },
     symbolr(As).
 symbolr([]) --> [].
 

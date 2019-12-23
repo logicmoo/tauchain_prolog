@@ -22,12 +22,17 @@ check_tml_sample(Name:Data):-
   dmsg("=============================="),
   dmsg("=============================="),
   dmsg("=============================="),
+  writeln('````'),
   dmsg("===NAME TEST====================="),
   dmsg(Name),
    dmsg("===INPUT===================="),
    dmsg(SData),
+   writeln('````'),
    dmsg("===PROCESS===================="),
-   run_tml(SData).
+   writeln('````'),
+   run_tml(SData),
+   writeln('````'),!.
+
 
 
 :- tml_examples(List), 

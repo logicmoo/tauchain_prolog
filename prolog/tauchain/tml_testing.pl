@@ -132,7 +132,10 @@ freezing :- bellowZero. # freezing if bellow 0.
 # See there is 'rain' and 'wet' in the output.
 # There is no 'freezing' because there is no
 # 'bellowZero'.
+`,
 
+	e1234:
+`
 1 2.        # 1-2 exists.
 1 4.        # 1-4 exists.
 3 1 :- 1 3. # 3-1 exists if 1-3 exists.
@@ -142,7 +145,10 @@ freezing :- bellowZero. # freezing if bellow 0.
 # You should see 1 2, 1 4 and 2 1 in the output.
 # There is no 3 1 because there is no 1 3.
 
-employee Suzi female.
+`,
+
+	eMadam:
+`employee Suzi female.
 salutation Suzi Madam :- employee Suzi female.
 
 # If employee Suzi is female, Suzi's salutation
@@ -332,7 +338,10 @@ happy.          # happy.
 ~happy :- sad.  # not happy if sad.
 sad.            # sad.
 # will result into 'sad'. No 'happy'.
+`,
 
+   directedGraph:
+`
 # e relation represents directed graph:
 # 1->2, 2->3, 3->4, 4->5, 5->1
 e 1 2.
