@@ -138,6 +138,7 @@ post1(_,_).
 %% pfcAddDbToHead(+P,-NewP) talkes a fact P or a conditioned fact
 %% (P:-C) and adds the Db context.
 %%
+:- dynamic(pfcCurrentDb/1).
 
 pfcAddDbToHead(P,NewP) :-
   pfcCurrentDb(Db),
@@ -161,7 +162,7 @@ pfcEnqueue(P,S) :-
     -> (Mode=direct  -> fc(P) ;
 	Mode=depth   -> pfcAsserta(pfcQueue(P),S) ;
 	Mode=breadth -> pfcAssert(pfcQueue(P),S) ;
-	else         -> pfcWarn("Unrecognized pfcSearch mode: ~w", Mode))
+	true         -> pfcWarn("Unrecognized pfcSearch mode: ~w", Mode))
      ; pfcWarn("No pfcSearch mode").
 
 
@@ -284,7 +285,7 @@ pfcAddTrigger(nt(Trigger,Test,Body),Support) :-
 pfcAddTrigger(bt(Trigger,Body),Support) :-
   !,
   pfcAssert(bt(Trigger,Body),Support),
-  pfcBtPtCombine(Trigger,Body).
+  pfcBtPtCombine(Trigger,Body,Support).
 
 pfcAddTrigger(X,_Support) :-
   pfcWarn("Unrecognized trigger to pfcAddtrigger: ~w",[X]).
@@ -927,7 +928,7 @@ pfcConnective('<=>').
 
 pfcConnective('-').
 pfcConnective('~').
-pfcConnective('\+').
+pfcConnective((\+)).
 
 processRule(Lhs,Rhs,ParentRule) :-
   copy_term(ParentRule,ParentRuleCopy),
@@ -1094,6 +1095,7 @@ pfcDatabaseTerm('<=>'/2).
 pfcDatabaseTerm('<='/2).
 pfcDatabaseTerm(pfcQueue/1).
 
+:- forall(pfcDatabaseTerm(Pred),dynamic(Pred)).
 % removes all forward chaining rules and justifications from db.
 
 pfcReset :-
@@ -1117,7 +1119,6 @@ pfcDatabaseItem(Term) :-
 pfcRetractOrWarn(X) :-  retract(X), !.
 pfcRetractOrWarn(X) :- 
   pfcWarn("Couldn't retract ~p.",[X]).
-
 
 
 %   File   : pfcdebug.pl
@@ -1189,6 +1190,8 @@ pfcPrintRules :-
   pfcPrintitems(R2),
   bagof((P<=Q),clause((P<=Q),true),R3),
   pfcPrintitems(R3).
+
+pfcGetTrigger(G):- call(G).
 
 pfcPrintTriggers :-
   format("Positive triggers...~n",[]),
@@ -1546,7 +1549,7 @@ pfc_support_relation((P,F,T)) :-
   support1(P,F,T).
 
 pfc_make_supports((P,S1,S2)) :- 
-  pfcAddSupport(P,(S1,S2),_),
+  pfcAddSupport(P,(S1,S2)),
   (pfcAdd(P); true),
   !.
 
@@ -1588,6 +1591,8 @@ term_expansion((=>P),(:- add(P))).
 % ***** predicates for brousing justifications *****
 
 :- use_module(library(lists)).
+
+:- dynamic(whymemory/2).
 
 pfcWhy :- 
   whymemory(P,_),
@@ -1673,9 +1678,9 @@ pfcAsk(Msg,Ans) :-
 
 pfcSelectJustificationNode(Js,Index,Step) :-
   JustNo is integer(Index),
-  nth(JustNo,Js,Justification),
+  nth1(JustNo,Js,Justification),
   StepNo is 1+ integer(Index*10 - JustNo*10),
-  nth(StepNo,Justification,Step).
+  nth1(StepNo,Justification,Step).
  
 
 
