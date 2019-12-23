@@ -1,3 +1,40 @@
+% :- module(tml_reader,[parse_tml/2,test_tml/1,show_tml_read/1]).
+
+:- use_module(library(logicmoo_common)).
+
+
+:- [tml_reader].
+
+run_tml(String):-
+ into_codes_list(String, Chars),
+ parse_tml(Chars, ExprsVs),
+   dmsg(sucess(===============)),
+   show_tml_read(ExprsVs),!,
+   dmsg(sucess(===============)),!.
+
+run_tml(String):-
+ dmsg(failed(===============)),
+ dmsg(String),
+ dmsg(failed(===============)),!.
+
+
+
+:- [tml_testing].
+check_tml_sample(Name:Data):-
+  text_to_string(Data,SData),
+  assert(tml_sample_name_data(Name,SData)),  
+  dmsg(===============),
+  dmsg(Name),
+  dmsg(===============),
+  run_tml(SData).
+
+
+:- tml_examples(List), 
+   maplist(check_tml_sample,List).
+
+
+end_of_file.
+
 /*
 %  NomicMUD: A MUD server written in Prolog
 %  Maintainer: Douglas Miles

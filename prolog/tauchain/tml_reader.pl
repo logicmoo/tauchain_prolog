@@ -1,4 +1,4 @@
-% :- module(tml_reader,[parse_tml/2,test_tml/1,show_tml_read/1]).
+% :- module(tml_reader,[parse_tml/2,test_tml_r/1,show_tml_read/1]).
 
 :- use_module(library(logicmoo_common)).
 
@@ -28,7 +28,8 @@ parse_tml(String, ExprsVs) :-
   parse_tml(file_lineS, String, ExprsVs).
 
 parse_tml(Pred, String, ExprsVs) :- 
- into_codes_list(String, Codes), 
+ into_codes_list(String, CodesL), 
+ append(CodesL,[10],Codes),
  PPred =.. [Pred,Exprs],
  phrase(PPred, Codes),
  intro_vars(Exprs,ExprsVs,_).
@@ -43,11 +44,11 @@ file_lineS(XX) --> wsp, !, file_lineS(XX).
 file_lineS([E|Es]) --> item(file_line(E)),!, file_lineS(Es).
 file_lineS([]) --> ws.
 
-file_line(S) --> `#`,!,read_string_until_no_esc(T,eoln),into_comment(T,S).
-file_line(S) --> `/*`,!,read_string_until_no_esc(T,`*/`),into_comment(T,S).
 file_line(Head) --> item(file_1line(Head)),optional(`.`).
 
-file_1line('@finline'(S)) --> `{`,!,file_lineS(S),`}`,optional(`.`).
+file_1line(S) --> `#`,!,read_string_until_no_esc(T,eoln),into_comment(T,S).
+file_1line(S) --> `/*`,!,read_string_until_no_esc(T,`*/`),into_comment(T,S).
+file_1line('@finline'(S)) --> `{`,!,file_lineS(S),`}`.
 file_1line('@treequery'(A))       --> item(`!!`),!,pred_expr(A).
 file_1line('@ask'(A))       --> item(`!`),!,pred_expr(A).
 file_1line('@trace'(A))       --> item(`@trace`),!,ws,symbol(A).
@@ -154,23 +155,23 @@ notrace_catch_fail(G):- quietly(catch(G,_,fail)),!.
 %notrace_catch_fail(G,_E,_C):- !, call(G).
 notrace_catch_fail(G,E,C):- quietly(catch(G,E,C)),!.
 
-test_tml(X):- parse_tml(X,Codes),show_tml_read(Codes),!.
-test_tml(X):- parsing_error(X,Codes),show_tml_read(Codes),!.
+test_tml_r(X):- parse_tml(X,Codes),show_tml_read(Codes),!.
+test_tml_r(X):- parsing_error(X,Codes),show_tml_read(Codes),!.
 
-test_tml(Pred, X):- parse_tml(Pred, X,Codes),show_tml_read(Codes),!.
+test_tml_r(Pred, X):- parse_tml(Pred, X,Codes),show_tml_read(Codes),!.
 
 show_tml_read(X):- is_list(X),!, maplist(show_tml_read,X).
 show_tml_read(X):- format('~NTML: ~q.~n',X).
 
 %:- [qvar_rewriter].
 
-:- test_tml("  
+:- test_tml_r("  
 e(1 2).
 e(2 1).
 e(?x ?y) :- e(?x ?z), e(?z ?y).
 ").
 
-:- test_tml("  
+:- test_tml_r("  
 	~S(?x ?x):-S(?x ?x).
 	~prog(?x ?x):-prog(?x ?x).
 	~alt(?x ?x):-alt(?x ?x).
@@ -179,22 +180,22 @@ e(?x ?y) :- e(?x ?z), e(?z ?y).
 
 
 
-:- test_tml("  
+:- test_tml_r("  
 a(b c).
 a(b(c)).
 ").
 
-:- test_tml("  
+:- test_tml_r("  
 a(1 2 3).
 rel('t' 1 2).
 ").
 
-:- test_tml("  
+:- test_tml_r("  
 b(?x).
 @trace foo
 ").
 
-:- test_tml("  
+:- test_tml_r("  
 @trace bar.
 r.
 ?hi.
@@ -202,7 +203,7 @@ r.
 !rel('t' 1 2).
 ").
 
-:- test_tml("  
+:- test_tml_r("  
 a(b c).
 a(b(c)).
 {a(1 2 3).
@@ -213,22 +214,22 @@ r.}
 !rel('t' 1 2).
 ").
 
-:- test_tml(" !! e ?x v1. ").
-:- test_tml(" ! e ?x v1. ").
+:- test_tml_r(" !! e ?x v1. ").
+:- test_tml_r(" ! e ?x v1. ").
 
 end_of_file.
 
 
-:- test_tml(" 
+:- test_tml_r(" 
 #{
         e v1 v2.
 #}
 ").
 
-:- test_tml(" e ?x ?y :- e ?x ?z, e ?z ?y. ").
+:- test_tml_r(" e ?x ?y :- e ?x ?z, e ?z ?y. ").
 
 
-:- test_tml("
+:- test_tml_r("
         e v2 v3.
         e v3 v4.
         e v4 v5.
@@ -237,7 +238,7 @@ end_of_file.
        !! e ?x v1.
 ").
 
-:- test_tml("
+:- test_tml_r("
        !! e ?x v1.
 {
        a b c d.
