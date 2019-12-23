@@ -20,8 +20,6 @@ check_tml_sample(Name:Data):-
   text_to_string(Data,SData),
   assert(tml_sample_name_data(Name,SData)),  
   dmsg("=============================="),
-  dmsg("=============================="),
-  dmsg("=============================="),
   writeln('````'),
   dmsg("===NAME TEST====================="),
   dmsg(Name),
