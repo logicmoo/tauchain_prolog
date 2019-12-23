@@ -445,7 +445,7 @@ start :- stop.
 
 
 
-:- if((current_prolog_flag(os_argv,X),member('tml_reader.pl',X))).
+%:- if((current_prolog_flag(os_argv,X),member('tml_reader.pl',X))).
 
 :- test_tml_r("  
 e(1 2).
@@ -455,7 +455,7 @@ e(?x ?y) :- e(?x ?z), e(?z ?y).
 
 :- test_tml_r("  
 	~S(?x ?x):-S(?x ?x).
-	~prog(?x ?x):-prog(?x ?x).
+	~prog(?x?x):-prog(?x ?x).
 	~alt(?x ?x):-alt(?x ?x).
 	~alts(?x ?x):-alts(?x ?x).
 ").
@@ -544,7 +544,7 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
 
 
 
-:- endif.
+% :- endif.
 
 end_of_file.
 

@@ -11,9 +11,11 @@ text_to_string_always(T,S):- always(text_to_string(T,S)).
 null --> ``.
 optional(X) --> X ; null.
 some(P) --> (P, optional(some(P))),!.
+peek(X,H,H):-phrase(X,H,_).
+npeek(X,H,H):- \+ phrase(X,H,_).
            
 into_codes_list(String, Chars):- current_prolog_flag(back_quotes, chars),!,
-   into_codes_list_s(String, Codes), atom_codes(Atom,Codes),atom_codes(Atom,Chars).
+   into_codes_list_s(String, Codes), atom_codes(Atom,Codes),atom_chars(Atom,Chars).
 into_codes_list(String, Codes):- into_codes_list_s(String, Codes).
 
 into_codes_list_s(String, Codes) :- \+ is_list(String),!, atom_codes(String,Codes).
@@ -42,13 +44,13 @@ file_lineS([]) --> ws.
 
 file_line(Head) --> item(file_1line(Head)),optional(`.`).
 
-comment(T) --> `#`,!,read_string_until_no_esc(T,eoln).
-comment(T) --> `/*`,!,read_string_until_no_esc(T,`*/`).
+comment(T) --> `#`, !, read_string_until_no_esc(T,eoln).
+comment(T) --> `/*`,!, read_string_until_no_esc(T,`*/`).
 
-file_1line('@comment'(S)) --> comment(T), {text_to_string_always(T,S)}.
-file_1line('@finline'(S)) --> `{`,!,file_lineS(S),`}`.
-file_1line('@treequery'(A))       --> item(`!!`),!,pred_expr(A).
-file_1line('@ask'(A))       --> item(`!`),!,pred_expr(A).
+file_1line('@comment'(S))   --> comment(T), {text_to_string_always(T,S)}.
+file_1line('@finline'(S))   --> `{`,!,file_lineS(S),`}`.
+file_1line('@ask'(A))       --> item(`!`),(npeek(code_type(punct));peek(`~`)),!,pred_expr(A).
+file_1line('@treequery'(A)) --> item(`!!`),!,pred_expr(A).
 file_1line('@trace'(A))       --> item(`@trace`),!,ws,symbol(A).
 file_1line(HeadBody) --> pred_expr(Head), item(`:-`), expr_list(Body), {list_to_conjuncts(Body,Conj),HeadBody =.. [(':-'),Head,Conj]}.
 file_1line(Head) --> pred_expr(Head).
@@ -83,22 +85,36 @@ wsp --> comment(_).
 wst --> some(` `;`\t`),!, ws.
 wstc --> ws,(`,`; wst).
 
-% A number N is represented as n(N), a symbol S as s(S).
 single_arg(N) --> wsp,! , single_arg(N).
-single_arg(N)       --> tnumber(N).
-single_arg(Text)    --> `"`, !, always(s_string_cont(`"`,Text)),!.
-single_arg((List))  --> `(`, !, arg_list(wstc,List), `)`.
-single_arg(A)       --> symbol(A),!.
-single_arg(X)       --> pred_expr(X).
+single_arg(N) --> single_arg_np(N).
+single_arg(X) --> pred_expr(X).
+
+single_arg_np(N)       --> tnumber(N).
+single_arg_np(Text)    --> `"`, !, always(s_string_cont(`"`,Text)),!.
+single_arg_np((List))  --> `(`, !, arg_list(wstc,List), `)`.
+single_arg_np(A)       --> symbol(A),npeek(`(`),!.
+
 
 item(Pred) --> ws,Pred,ws.
 
 pred_expr(Pred) --> wsp, !, pred_expr(Pred).
+pred_expr(Pred)    --> single_arg_np(X),item(infix(Cs)),!,single_arg_np(Y), {univ_holds(Pred,[Cs,X,Y])}.
 pred_expr(Pred)    --> symbol(Cs),`(`, quietly(arg_list(wst,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs),`(`, !, quietly(arg_list(wstc,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs), wst, arg_list(wst,List), {List\==[]}, {univ_holds(Pred,[Cs|List])}.
 pred_expr(not(A))  --> item(`~`),!,pred_expr(A).
 pred_expr(A)       --> symbol(A).
+
+infix(Cs) --> {infix_op(Cs),atom_codes(Cs,Codes)},Codes,!.
+
+infix_op('!=').
+infix_op('=>').
+infix_op('=<').
+infix_op('<=').
+infix_op('>=').
+infix_op('=').
+infix_op('<').
+infix_op('>').
 
 univ_holds(Pred,[Cs,Holds]):-compound(Holds),Holds=..[holds|List],!,univ_holds(Pred,[Cs|List]).
 univ_holds(Pred,[Cs|List]):- atom(Cs),!,Pred =.. [Cs|List].
@@ -111,12 +127,12 @@ symbol('$VAR'(UAtom)) --> `?`,symbolr(Codes),!,{atom_codes(Atom,Codes),upcase_at
 symbol(Atom) --> quietly((symbolc(Codes),!,{atom_codes(Atom,Codes)})).
 symbolc([A|As]) -->
     [A],
-    { memberchk(A, `+/-*><=`) ; code_type(A, alpha) },
+    { memberchk(A, `@_`) ; code_type(A, alpha) },
     symbolr(As).
 
 symbolr([A|As]) -->
     [A],
-    { memberchk(A, `+/-*><=_`) ; code_type(A, alnum) },
+    { memberchk(A, `_`) ; code_type(A, alnum) },
     symbolr(As).
 symbolr([]) --> [].
 
