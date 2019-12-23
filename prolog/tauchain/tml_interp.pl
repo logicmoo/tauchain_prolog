@@ -8,14 +8,9 @@
 run_tml(String):-
  into_codes_list(String, Chars),
  parse_tml(Chars, ExprsVs),
-   dmsg(sucess(===============)),
-   show_tml_read(ExprsVs),!,
-   dmsg(sucess(===============)),!.
-
-run_tml(String):-
- dmsg(failed(===============)),
- dmsg(String),
- dmsg(failed(===============)),!.
+ show_tml_read(ExprsVs),!,
+ dmsg(failed("===SUCESSS====================")),!.
+run_tml(_):- dmsg(failed("===FAILED====================")),!.
 
 
 
@@ -23,10 +18,15 @@ run_tml(String):-
 check_tml_sample(Name:Data):-
   text_to_string(Data,SData),
   assert(tml_sample_name_data(Name,SData)),  
-  dmsg(===============),
+  dmsg("=============================="),
+  dmsg("=============================="),
+  dmsg("=============================="),
+  dmsg("===NAME TEST====================="),
   dmsg(Name),
-  dmsg(===============),
-  run_tml(SData).
+   dmsg("===INPUT===================="),
+   dmsg(SData),
+   dmsg("===PROCESS===================="),
+   run_tml(SData).
 
 
 :- tml_examples(List), 
