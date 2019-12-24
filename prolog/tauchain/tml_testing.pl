@@ -3,12 +3,19 @@
 run_tml(String):-
  into_codes_list(String, Chars),
  parse_tml(Chars, ExprsVs),
- show_tml_read(ExprsVs),!,
- dmsg("===SUCESSS===================="),!.
+ pfcReset,
+ show_tml_read_and_do(ExprsVs),!,
+ dmsg("===SUCESSS===================="),!,
+ pfcPrintDB.
+
 run_tml(_):- 
  dmsg(failed("===FAILED====================")),!.
 
+show_tml_read_and_do(ExprsVs):- is_list(ExprsVs),!,maplist(show_tml_read_and_do,ExprsVs).
+show_tml_read_and_do(ExprsVs):- show_tml_read(ExprsVs),show_tml_do(ExprsVs).
 
+show_tml_do(H:-B):- !,ain(B==>H).
+show_tml_do(H):- ain(H).
 
 check_tml_sample(Name:Data):-
   text_to_string(Data,SData),

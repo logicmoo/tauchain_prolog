@@ -8,7 +8,8 @@
 
 :-  'lmcode':ensure_loaded(library(logicmoo_common)).
 
-% not(P):- \+ P.
+%:- dynamic(not/1).
+not(P):- \+ P.
 
 
 %:- kill_term_expansion.
@@ -200,6 +201,7 @@ rewrite_necks(P,PO):-
 bh_neck('->').
 bh_neck('=>').
 bh_neck('==>').
+rewrite_functor(not,(\+)).
 rewrite_functor(F,F).
 rewrite_compound((:-),[H,B],PO):-
   mpred_settings(neck,NewNeck),!,
@@ -207,9 +209,8 @@ rewrite_compound((:-),[H,B],PO):-
     rewrite_compound(NewNeck,[B,H],PO);
     rewrite_compound(NewNeck,[H,B],PO)).
 
-
 rewrite_compound(N,A,PO):-
-  rewrite_functor(N,NO),
+  rewrite_functor(N,NO),!,
   maplist(rewrite_necks,A,AO),!,
   compound_name_arguments(PO,NO,AO).
 
