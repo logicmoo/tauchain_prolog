@@ -171,7 +171,7 @@ TML: '@treequery'(e(X,v1)).
 TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 ````
 
- == TEST: INTRO
+= TEST INTRO
 ````
 # Enter your TML logic program here and
 # press RUN to execute.
@@ -186,9 +186,9 @@ TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 # they are terminated by the '.' character
 # like sentences in English.
 ````
-% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl:47
-% ===PROCESS====================
 ````
+% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl:46
+% ===PROCESS====================
 % ===SUCESSS====================
 
 
@@ -202,7 +202,7 @@ TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 
 ````
 
- == TEST: EFACTS
+= TEST EFACTS
 ````
 # Facts define RELATIONS between entities.
 # Fact clauses are considered to be true.
@@ -219,8 +219,8 @@ beginsWithJ Joe.  # Joe begins with J.
 # Output is padded by '*' character when
 # different ARITIES are used.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: father('Tom','Amy').
 Adding (u) father('Tom','Amy')
 TML: canFly(bird).
@@ -259,7 +259,7 @@ Adding (u) beginsWithJ('Joe')
 
 ````
 
- == TEST: ERELATIONS
+= TEST ERELATIONS
 ````
 # Every FACT begins with a predicate,
 # which is also the name of a relation.
@@ -298,8 +298,8 @@ employee Jane Doe support.
 #
 # Number of columns is also called ARITY.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: beginsWithJ('Jane').
 Adding (u) beginsWithJ('Jane')
 TML: beginsWithJ('John').
@@ -338,7 +338,7 @@ Adding (u) employee('Jane','Doe',support)
 
 ````
 
- == TEST: EARITY
+= TEST EARITY
 ````
 # Every clause has its arity. It's a dimension
 # of the domain in the corresponding Cartesian
@@ -375,8 +375,8 @@ a 1 2 3 4 5 6.
 # Output of TML is padded by '*' character
 # up to the highest known arity.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: rain.
 Adding (u) rain
 TML: night.
@@ -418,7 +418,7 @@ Adding (u) a(1,2,3,4,5,6)
 
 ````
 
- == TEST: ERULES
+= TEST ERULES
 ````
 # Rules allow creation/inferring of new facts.
 # Every rule has a head and a body separated by
@@ -444,10 +444,9 @@ freezing :- bellowZero. # freezing if bellow 0.
 # See there is 'rain' and 'wet' in the output.
 # There is no 'freezing' because there is no
 # 'bellowZero'.
-
+````
 ````
 % ===PROCESS====================
-````
 TML: rain.
 Adding (u) rain
 TML: wet:-rain.
@@ -480,7 +479,7 @@ Adding (u) bellowZero==>freezing
 
 ````
 
- == TEST: E1234
+= TEST E1234
 ````
 
 1 2.        # 1-2 exists.
@@ -492,10 +491,9 @@ Adding (u) bellowZero==>freezing
 # You should see 1 2, 1 4 and 2 1 in the output.
 # There is no 3 1 because there is no 1 3.
 
-
+````
 ````
 % ===PROCESS====================
-````
 TML: holds(1,2).
 Adding (u) holds(1,2)
 TML: holds(1,4).
@@ -531,7 +529,7 @@ Adding (g) holds(2,1)          % WHY holds(1,2),trigPos(holds(1,2),rhs([holds(2,
 
 ````
 
- == TEST: EMADAM
+= TEST EMADAM
 ````
 employee Suzi female.
 salutation Suzi Madam :- employee Suzi female.
@@ -544,8 +542,8 @@ salutation Suzi Madam :- employee Suzi female.
 # Rules become more powerful when used with
 # VARIABLES.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: employee('Suzi',female).
 Adding (u) employee('Suzi',female)
 TML: salutation('Suzi','Madam'):-employee('Suzi',female).
@@ -575,7 +573,7 @@ Adding (g) salutation('Suzi','Madam')          % WHY employee('Suzi',female),tri
 
 ````
 
- == TEST: EVARIABLES
+= TEST EVARIABLES
 ````
 # Variables are used for substitution of
 # multiple possible entities in rules.
@@ -630,8 +628,8 @@ bird John.
 
 # TML infers that John beeps and he can fly.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: bird('Charlie').
 Adding (u) bird('Charlie')
 TML: bird('Coco').
@@ -791,7 +789,7 @@ Adding (g) beeps('John')          % WHY bird('John'),trigPos(bird('John'),rhs([b
 
 ````
 
- == TEST: AND/OR
+= TEST AND/OR
 ````
 # When you need multiple conditions in a body
 # separate them by a comma. You can read comma
@@ -827,8 +825,8 @@ female Suzi.
 # And Amy, Jack, Jane, John and Suzi are
 # humans.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: boy(X):-child(X),male(X).
 Adding (u) child(A),male(A)==>boy(A)
 TML: girl(X):-child(X),female(X).
@@ -962,7 +960,7 @@ Adding (g) girl('Suzi')          % WHY female('Suzi'),trigPos(female('Suzi'),rhs
 
 ````
 
- == TEST: ERECURSION
+= TEST ERECURSION
 ````
 # Recursion is used to traverse through
 # all the entities in a relation.
@@ -996,8 +994,8 @@ ancestor ?anc ?desc :-
 # Notice how ancestor relation is used in both
 # head and body. This is causing the recursion.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: parent('Fred','Sue').
 Adding (u) parent('Fred','Sue')
 TML: parent('Jack','Fred').
@@ -1128,7 +1126,7 @@ Adding (g) ancestor('Tom','Sue')          % WHY ancestor('Amy','Sue'),trigPos(an
 
 ````
 
- == TEST: TRANSITIVE CLOSURE
+= TEST TRANSITIVE CLOSURE
 ````
 # Transitive closure (TC)
 #
@@ -1159,8 +1157,8 @@ tc ?x ?y :- tc ?x ?z, e ?z ?y.
 # TML infers all the possible paths in the
 # 'e' graph into 'tc' graph.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: e(1,2).
 Adding (u) e(1,2)
 TML: e(2,3).
@@ -1583,7 +1581,7 @@ Adding (g) tc(5,5)          % WHY e(4,5),trigPos(e(4,A),rhs([tc(5,A)])).
 
 ````
 
- == TEST: ENEGATION
+= TEST ENEGATION
 ````
 # Negation
 #
@@ -1603,18 +1601,18 @@ canFly ?X :- bird ?X, ~wounded ?X.
 # wounded. The only fact TML can infer here
 # is that Coco can fly.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 
-WARNING/Pfc: Couldn't db_retract trigPos(e(1,_483226),rhs([tc(1,_483226)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(1,_483172),rhs([tc(1,_483172)])).
 WARNING/Pfc: Couldn't db_retract tc(1,2).
-WARNING/Pfc: Couldn't db_retract trigPos(e(2,_483226),rhs([tc(2,_483226)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(2,_483172),rhs([tc(2,_483172)])).
 WARNING/Pfc: Couldn't db_retract tc(2,3).
-WARNING/Pfc: Couldn't db_retract trigPos(e(3,_483226),rhs([tc(3,_483226)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(3,_483172),rhs([tc(3,_483172)])).
 WARNING/Pfc: Couldn't db_retract tc(3,4).
-WARNING/Pfc: Couldn't db_retract trigPos(e(4,_483226),rhs([tc(4,_483226)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(4,_483172),rhs([tc(4,_483172)])).
 WARNING/Pfc: Couldn't db_retract tc(4,5).
-WARNING/Pfc: Couldn't db_retract trigPos(e(5,_483226),rhs([tc(5,_483226)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(5,_483172),rhs([tc(5,_483172)])).
 WARNING/Pfc: Couldn't db_retract tc(5,1).
 TML: bird('Coco').
 Adding (u) bird('Coco')
@@ -1652,7 +1650,7 @@ Adding (g) canFly('Coco')          % WHY \+wounded('Coco'),trigNeg(wounded('Coco
 
 ````
 
- == TEST: EDELETION
+= TEST EDELETION
 ````
 # Negation in heads deletes the fact from
 # the database of facts.
@@ -1661,10 +1659,9 @@ happy.          # happy.
 ~happy :- sad.  # not happy if sad.
 sad.            # sad.
 # will result into 'sad'. No 'happy'.
-
+````
 ````
 % ===PROCESS====================
-````
 TML: happy.
 Adding (u) happy
 TML: not(happy):-sad.
@@ -1692,7 +1689,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+happy,pcfUser).
 
 ````
 
- == TEST: DIRECTEDGRAPH
+= TEST DIRECTEDGRAPH
 ````
 
 # e relation represents directed graph:
@@ -1727,8 +1724,8 @@ done :- notdone.
 # stop the TC
 ~notdone :- done.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: e(1,2).
 Adding (u) e(1,2)
 TML: e(2,3).
@@ -2410,7 +2407,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+notdone,pcfUser).
 
 ````
 
- == TEST: FAMILY
+= TEST FAMILY
 ````
 father Tom Amy.
 father Jack Fred.
@@ -2431,22 +2428,22 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y.
 # from Datalog Educational System
 # http://des.sourceforge.net/
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 
-WARNING/Pfc: Couldn't db_retract trigPos(e(1,_569312),trigPos(notdone,rhs([t(1,_569312)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(1,_569252),trigPos(notdone,rhs([t(1,_569252)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(1,2)])).
 WARNING/Pfc: Couldn't db_retract t(1,2).
-WARNING/Pfc: Couldn't db_retract trigPos(e(2,_569312),trigPos(notdone,rhs([t(2,_569312)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(2,_569252),trigPos(notdone,rhs([t(2,_569252)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(2,3)])).
 WARNING/Pfc: Couldn't db_retract t(2,3).
-WARNING/Pfc: Couldn't db_retract trigPos(e(3,_569312),trigPos(notdone,rhs([t(3,_569312)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(3,_569252),trigPos(notdone,rhs([t(3,_569252)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(3,4)])).
 WARNING/Pfc: Couldn't db_retract t(3,4).
-WARNING/Pfc: Couldn't db_retract trigPos(e(4,_569312),trigPos(notdone,rhs([t(4,_569312)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(4,_569252),trigPos(notdone,rhs([t(4,_569252)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(4,5)])).
 WARNING/Pfc: Couldn't db_retract t(4,5).
-WARNING/Pfc: Couldn't db_retract trigPos(e(5,_569312),trigPos(notdone,rhs([t(5,_569312)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(5,_569252),trigPos(notdone,rhs([t(5,_569252)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(5,1)])).
 WARNING/Pfc: Couldn't db_retract t(5,1).
 TML: father('Tom','Amy').
@@ -2700,7 +2697,7 @@ Adding (g) ancestor('CarolI','CarolIII')          % WHY ancestor('CarolII','Caro
 
 ````
 
- == TEST: ARMAGEDDON
+= TEST ARMAGEDDON
 ````
 # There are birds Charlie and Coco
 bird Charlie.
@@ -2732,8 +2729,8 @@ dead ?x :- mortal ?x, armageddon.
 ~mortal ?x :- dead ?x.
 ~being ?x :- dead ?x.
 ````
-% ===PROCESS====================
 ````
+% ===PROCESS====================
 TML: bird('Charlie').
 Adding (u) bird('Charlie')
 TML: bird('Coco').
@@ -2849,7 +2846,7 @@ Adding (u) dead(A)==> \+being(A)
 
 ````
 
- == TEST: EUNSAT
+= TEST EUNSAT
 ````
 # Following program does 6 steps and returns
 # to the state where it initially started.
@@ -2865,10 +2862,9 @@ stop :- running.
 ~running :- stop.
 start :- stop.
 ~stop :- start.
-
+````
 ````
 % ===PROCESS====================
-````
 TML: start.
 Adding (u) start
 TML: running:-start.
