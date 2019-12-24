@@ -48,7 +48,6 @@ db_asserta(X):-invoke_modify(assert(a),X).
 db_assert(X):-old_assert,!,assert(X).
 db_assert(X):-invoke_modify(assert(z),X).
 
-
 db_clause(X,Y,Ref):-old_clausedb,!,clause(X,Y,Ref).
 db_clause(X,Y,Ref):-invoke_check(clause(_),clause_asserted(X,Y,Ref)).
 db_clause(X,Y):-old_clausedb,!,clause(X,Y).

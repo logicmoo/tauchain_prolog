@@ -3,15 +3,15 @@
 %   Updated: 10/11/87, ...
 %   Purpose: consult system file for ensure
 
-user:file_search_path(pack,'/devel/PrologMUD/packs').
-:- attach_packs.
+%user:file_search_path(pack,'/devel/PrologMUD/packs').
+%:- attach_packs.
 
-:-  'lmcode':ensure_loaded(logicmoo(logicmoo_utils)).
+:-  'lmcode':ensure_loaded(library(logicmoo_common)).
 
 % not(P):- \+ P.
 
 
-:- kill_term_expansion.
+%:- kill_term_expansion.
 %:- include(prologmud(mud_header)).
 :- thread_local t_l:pfcExpansion.
 :- thread_local t_l:pfcExpansionWas.
