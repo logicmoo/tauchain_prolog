@@ -171,7 +171,7 @@ TML: '@treequery'(e(X,v1)).
 TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 ````
 
-== TEST: INTRO
+ == TEST: INTRO
 ````
 # Enter your TML logic program here and
 # press RUN to execute.
@@ -202,7 +202,7 @@ TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 
 ````
 
-== TEST: EFACTS
+ == TEST: EFACTS
 ````
 # Facts define RELATIONS between entities.
 # Fact clauses are considered to be true.
@@ -259,7 +259,7 @@ Adding (u) beginsWithJ('Joe')
 
 ````
 
-== TEST: ERELATIONS
+ == TEST: ERELATIONS
 ````
 # Every FACT begins with a predicate,
 # which is also the name of a relation.
@@ -338,7 +338,7 @@ Adding (u) employee('Jane','Doe',support)
 
 ````
 
-== TEST: EARITY
+ == TEST: EARITY
 ````
 # Every clause has its arity. It's a dimension
 # of the domain in the corresponding Cartesian
@@ -418,7 +418,7 @@ Adding (u) a(1,2,3,4,5,6)
 
 ````
 
-== TEST: ERULES
+ == TEST: ERULES
 ````
 # Rules allow creation/inferring of new facts.
 # Every rule has a head and a body separated by
@@ -480,7 +480,7 @@ Adding (u) bellowZero==>freezing
 
 ````
 
-== TEST: E1234
+ == TEST: E1234
 ````
 
 1 2.        # 1-2 exists.
@@ -531,7 +531,7 @@ Adding (g) holds(2,1)          % WHY holds(1,2),trigPos(holds(1,2),rhs([holds(2,
 
 ````
 
-== TEST: EMADAM
+ == TEST: EMADAM
 ````
 employee Suzi female.
 salutation Suzi Madam :- employee Suzi female.
@@ -575,7 +575,7 @@ Adding (g) salutation('Suzi','Madam')          % WHY employee('Suzi',female),tri
 
 ````
 
-== TEST: EVARIABLES
+ == TEST: EVARIABLES
 ````
 # Variables are used for substitution of
 # multiple possible entities in rules.
@@ -791,7 +791,7 @@ Adding (g) beeps('John')          % WHY bird('John'),trigPos(bird('John'),rhs([b
 
 ````
 
-== TEST: AND/OR
+ == TEST: AND/OR
 ````
 # When you need multiple conditions in a body
 # separate them by a comma. You can read comma
@@ -962,7 +962,7 @@ Adding (g) girl('Suzi')          % WHY female('Suzi'),trigPos(female('Suzi'),rhs
 
 ````
 
-== TEST: ERECURSION
+ == TEST: ERECURSION
 ````
 # Recursion is used to traverse through
 # all the entities in a relation.
@@ -1128,7 +1128,7 @@ Adding (g) ancestor('Tom','Sue')          % WHY ancestor('Amy','Sue'),trigPos(an
 
 ````
 
-== TEST: TRANSITIVE CLOSURE
+ == TEST: TRANSITIVE CLOSURE
 ````
 # Transitive closure (TC)
 #
@@ -1583,7 +1583,7 @@ Adding (g) tc(5,5)          % WHY e(4,5),trigPos(e(4,A),rhs([tc(5,A)])).
 
 ````
 
-== TEST: ENEGATION
+ == TEST: ENEGATION
 ````
 # Negation
 #
@@ -1606,15 +1606,15 @@ canFly ?X :- bird ?X, ~wounded ?X.
 % ===PROCESS====================
 ````
 
-WARNING/Pfc: Couldn't db_retract trigPos(e(1,_483212),rhs([tc(1,_483212)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(1,_483226),rhs([tc(1,_483226)])).
 WARNING/Pfc: Couldn't db_retract tc(1,2).
-WARNING/Pfc: Couldn't db_retract trigPos(e(2,_483212),rhs([tc(2,_483212)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(2,_483226),rhs([tc(2,_483226)])).
 WARNING/Pfc: Couldn't db_retract tc(2,3).
-WARNING/Pfc: Couldn't db_retract trigPos(e(3,_483212),rhs([tc(3,_483212)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(3,_483226),rhs([tc(3,_483226)])).
 WARNING/Pfc: Couldn't db_retract tc(3,4).
-WARNING/Pfc: Couldn't db_retract trigPos(e(4,_483212),rhs([tc(4,_483212)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(4,_483226),rhs([tc(4,_483226)])).
 WARNING/Pfc: Couldn't db_retract tc(4,5).
-WARNING/Pfc: Couldn't db_retract trigPos(e(5,_483212),rhs([tc(5,_483212)])).
+WARNING/Pfc: Couldn't db_retract trigPos(e(5,_483226),rhs([tc(5,_483226)])).
 WARNING/Pfc: Couldn't db_retract tc(5,1).
 TML: bird('Coco').
 Adding (u) bird('Coco')
@@ -1652,7 +1652,7 @@ Adding (g) canFly('Coco')          % WHY \+wounded('Coco'),trigNeg(wounded('Coco
 
 ````
 
-== TEST: EDELETION
+ == TEST: EDELETION
 ````
 # Negation in heads deletes the fact from
 # the database of facts.
@@ -1692,7 +1692,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+happy,pcfUser).
 
 ````
 
-== TEST: DIRECTEDGRAPH
+ == TEST: DIRECTEDGRAPH
 ````
 
 # e relation represents directed graph:
@@ -2410,7 +2410,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+notdone,pcfUser).
 
 ````
 
-== TEST: FAMILY
+ == TEST: FAMILY
 ````
 father Tom Amy.
 father Jack Fred.
@@ -2434,19 +2434,19 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y.
 % ===PROCESS====================
 ````
 
-WARNING/Pfc: Couldn't db_retract trigPos(e(1,_569292),trigPos(notdone,rhs([t(1,_569292)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(1,_569312),trigPos(notdone,rhs([t(1,_569312)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(1,2)])).
 WARNING/Pfc: Couldn't db_retract t(1,2).
-WARNING/Pfc: Couldn't db_retract trigPos(e(2,_569292),trigPos(notdone,rhs([t(2,_569292)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(2,_569312),trigPos(notdone,rhs([t(2,_569312)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(2,3)])).
 WARNING/Pfc: Couldn't db_retract t(2,3).
-WARNING/Pfc: Couldn't db_retract trigPos(e(3,_569292),trigPos(notdone,rhs([t(3,_569292)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(3,_569312),trigPos(notdone,rhs([t(3,_569312)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(3,4)])).
 WARNING/Pfc: Couldn't db_retract t(3,4).
-WARNING/Pfc: Couldn't db_retract trigPos(e(4,_569292),trigPos(notdone,rhs([t(4,_569292)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(4,_569312),trigPos(notdone,rhs([t(4,_569312)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(4,5)])).
 WARNING/Pfc: Couldn't db_retract t(4,5).
-WARNING/Pfc: Couldn't db_retract trigPos(e(5,_569292),trigPos(notdone,rhs([t(5,_569292)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(e(5,_569312),trigPos(notdone,rhs([t(5,_569312)]))).
 WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(5,1)])).
 WARNING/Pfc: Couldn't db_retract t(5,1).
 TML: father('Tom','Amy').
@@ -2700,7 +2700,7 @@ Adding (g) ancestor('CarolI','CarolIII')          % WHY ancestor('CarolII','Caro
 
 ````
 
-== TEST: ARMAGEDDON
+ == TEST: ARMAGEDDON
 ````
 # There are birds Charlie and Coco
 bird Charlie.
@@ -2849,7 +2849,7 @@ Adding (u) dead(A)==> \+being(A)
 
 ````
 
-== TEST: EUNSAT
+ == TEST: EUNSAT
 ````
 # Following program does 6 steps and returns
 # to the state where it initially started.
