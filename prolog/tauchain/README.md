@@ -1,3 +1,5 @@
+````
+
 Adding (u) j(A),k(B)==>bothJK(A,B)
 Adding (u) bothJK(A,B),go==>jkGo(A,B)
 Adding (u) j(1)
@@ -174,6 +176,7 @@ TML: e(X,Y):-e(X,Z),e(Z,Y).
 TML: '@treequery'(e(X,v1)).
 TML: '@treequery'(e(X,v1)).
 TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
+````
 
 `====== TEST: INTRO ===========`
 ```
