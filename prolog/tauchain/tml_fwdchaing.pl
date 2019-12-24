@@ -57,12 +57,15 @@ db_call(What,X):-invoke_call(call(What),X).
 rem(X):-pfcRem(X).
 
 
+bagof_or_nil(T,G,B):- bagof(T,G,B)*->true;B=[].
+setof_or_nil(T,G,B):- setof(T,G,B)*->true;B=[].
+
 invoke_call(_,      B ):- var(B),!,fail.
 invoke_call(A,  not(B)):- !, not(invoke_call(A,B)).
-invoke_call(A,\+(B)):- !, not(invoke_call(A,B)).
+invoke_call(A,   \+(B)):- !, \+ invoke_call(A,B).
 invoke_call(A, call(B)):- !, invoke_call(A,B).
-invoke_call(_A,      X ):- !, current_predicate(_,X),!,call(X).
-invoke_call(A,      B ):- (invoke_op0(A,B)).
+invoke_call(_A,     B ):- current_predicate(_,B),!,call(B).
+invoke_call(A,      B ):- invoke_op0(A,B).
 
 invoke_modify(A,B):-(invoke_op0(A,B)).
 invoke_check(A,B):-(invoke_op0(A,B)).
@@ -168,7 +171,7 @@ mpred_default(GeneralTerm,Default) :-
 %% ain(P,S) asserts P into the dataBase with support from S.
 
 :- abolish(ain/1).
-ain(P) :-  ain(P,(pcfUser,pcfUser)).
+ain(P) :- from_user(S), ain(P,S).
 
 ain((==>P),S) :- !, ain(P,S).
 
@@ -177,14 +180,43 @@ ain(P,S) :-
   pfcRun.
 
 %ain(_,_).
-ain(P,S) :- mpred_warn("ain(~w,~w) failed",[P,S]).
+ain(P,S) :- mpred_warn("ain(~p,~p) failed",[P,S]).
 
+ain_test(X):-  
+   ain(X),   
+   pfcRun,
+   flush_output,
+   dmsg(""),
+   pfcPrintDB,
+   break.
+
+rewrite_necks(P,PO):- \+ compound(P),!,P=PO.
+rewrite_necks(P,PO):- is_list(P),!,maplist(rewrite_necks,P,PO).
+rewrite_necks(==>P,PO):- !, rewrite_necks(P,PO).
+rewrite_necks(P,PO):- 
+  compound_name_arguments(P,N,A),
+  rewrite_compound(N,A,PO).
+
+bh_neck('->').
+bh_neck('=>').
+bh_neck('==>').
+rewrite_functor(F,F).
+rewrite_compound((:-),[H,B],PO):-
+  mpred_settings(neck,NewNeck),!,
+  (bh_neck(NewNeck) -> 
+    rewrite_compound(NewNeck,[B,H],PO);
+    rewrite_compound(NewNeck,[H,B],PO)).
+
+
+rewrite_compound(N,A,PO):-
+  rewrite_functor(N,NO),
+  maplist(rewrite_necks,A,AO),!,
+  compound_name_arguments(PO,NO,AO).
 
 % pfcPost(+Ps,+S) tries to add a fact or set of fact to the database.  For
 % each fact (or the singelton) pfcPost1 is called. It always succeeds.
 
-pfcPost([H|T],S) :-
-  !,
+pfcPost([H|T],S) :- !,
   pfcPost1(H,S),
   pfcPost(T,S).
 pfcPost([],_) :- !.
@@ -196,6 +228,12 @@ pfcPost(P,S) :- pfcPost1(P,S).
 % It always succeeds.
 
 pfcPost1(P,S) :- 
+  rewrite_necks(P,PO) -> 
+  PO \=@= P, !,
+  pfcPost(PO,S).
+
+pfcPost1({P},_) :- !, call(P).
+pfcPost1(P,S) :-
   %% db ainDbToHead(P,P2),
   % pfcRemoveOldVersion(P),
   ainSupport(P,S),
@@ -207,7 +245,7 @@ pfcPost1(P,S) :-
   !.
 
 pfcPost1(_,_).
-%%pfcPost1(P,S) :-  mpred_warn("ain(~w,~w) failed",[P,S]).
+%%pfcPost1(P,S) :-  mpred_warn("ain(~p,~p) failed",[P,S]).
 
 %%
 %% ainDbToHead(+P,-NewP) talkes a fact P or a conditioned fact
@@ -236,7 +274,7 @@ pfcEnqueue(P,S) :-
     -> (Mode=direct  -> pfcFwd(P) ;
 	Mode=depth   -> pfcAsserta(mpred_queue(P),S) ;
 	Mode=breadth -> pfcAssert(mpred_queue(P),S) ;
-	else         -> mpred_warn("Unrecognized mpred_search mode: ~w", Mode))
+	otherwise         -> mpred_warn("Unrecognized mpred_search mode: ~p", Mode))
      ; mpred_warn("No mpred_search mode").
 
 
@@ -246,7 +284,7 @@ pfcRemoveOldVersion((Identifier::::Body)) :-
   % this should never happen.
   var(identifier),
   !,
-  mpred_warn("variable used as an  rule name in ~w :::: ~w",
+  mpred_warn("variable used as an  rule name in ~p :::: ~p",
           [Identifier,Body]).
 
   
@@ -301,7 +339,7 @@ remove_selection(P) :-
   !.
   
 remove_selection(P) :-
-  brake(format("~Npfc:get_next_fact - selected fact not on Queue: ~w",
+  brake(format("~Npfc:get_next_fact - selected fact not on Queue: ~p",
                [P])).
 
 
@@ -363,7 +401,7 @@ ainTrigger(trigBC(Trigger,Body),Support) :-
   pfcBtPtCombine(Trigger,Body).
 
 ainTrigger(X,_Support) :-
-  mpred_warn("Unrecognized trigger to aintrigger: ~w",[X]).
+  mpred_warn("Unrecognized trigger to aintrigger: ~p",[X]).
 
 
 pfcBtPtCombine(Head,Body,Support) :- 
@@ -414,7 +452,7 @@ pfcRetractType(rule,X) :-
 pfcRetractType(trigger,X) :- 
   db_retract(X)
     -> unFc(X)
-     ; mpred_warn("Trigger not found to db_retract: ~w",[X]).
+     ; mpred_warn("Trigger not found to db_retract: ~p",[X]).
 
 pfcRetractType(action,X) :- pfcRemActionTrace(X).
   
@@ -452,19 +490,21 @@ pfcRem(List) :-
   
 pfcRem(P) :- 
   % pfcRem/1 is the pcfUser's interface - it withdraws pcfUser support for P.
-  pfcRem(P,(pcfUser,pcfUser)).
+  from_user(S),
+  pfcRem(P,S).
 
 pfcRem_L([H|T]) :-
   % pfcRem each element in the list.
-  pfcRem(H,(pcfUser,pcfUser)),
+  from_user(S),
+  pfcRem(H,S),
   pfcRem_L(T).
 
 pfcRem(P,S) :-
-  % pfcDebug(format("~Nremoving support ~w from ~w",[S,P])),
+  % pfcDebug(format("~Nremoving support ~p from ~p",[S,P])),
   mpred_trace_msg('~n    Removing support: ~q from ~q~n',[S,P]),
   pfcRemSupport(P,S)
      -> pcfRemoveIfUnsupported(P)
-      ; mpred_warn("pfcRem/2 Could not find support ~w to remove from fact ~w",
+      ; mpred_warn("pfcRem/2 Could not find support ~p to remove from fact ~p",
                 [S,P]).
 
 %%
@@ -474,7 +514,8 @@ pfcRem(P,S) :-
 
 mpred_rem2(P) :- 
   % mpred_rem2/1 is the pcfUser's interface - it withdraws pcfUser support for P.
-  mpred_rem2(P,(pcfUser,pcfUser)).
+  from_user(S),
+  mpred_rem2(P,S).
 
 mpred_rem2(P,S) :-
   pfcRem(P,S),
@@ -495,7 +536,7 @@ remove(F) :-
 
 pfcRemoveSupports(F) :- 
   pfcRemSupport(F,S),
-  mpred_warn("~w was still supported by ~w",[F,S]),
+  mpred_warn("~p was still supported by ~p",[F,S]),
   fail.
 pfcRemoveSupports(_).
 
@@ -518,14 +559,14 @@ pfcUndo(pfcPT3(Key,Head,Body)) :-
   !,
   (db_retract(pfcPT3(Key,Head,Body))
     -> unFc(trigPos(Head,Body))
-     ; mpred_warn("Trigger not found to db_retract: ~w",[trigPos(Head,Body)])).
+     ; mpred_warn("Trigger not found to db_retract: ~p",[trigPos(Head,Body)])).
 
 pfcUndo(trigNeg(Head,Condition,Body)) :-  
   % undo a negative trigger.
   !,
   (db_retract(trigNeg(Head,Condition,Body))
     -> unFc(trigNeg(Head,Condition,Body))
-     ; mpred_warn("Trigger not found to db_retract: ~w",[trigNeg(Head,Condition,Body)])).
+     ; mpred_warn("Trigger not found to db_retract: ~p",[trigNeg(Head,Condition,Body)])).
 
 pfcUndo(Fact) :-
   % undo a random fact, printing out the trace, if relevant.
@@ -605,7 +646,7 @@ pfcWFF(F,Descendants) :-
   % first make sure we aren't in a loop.
   ( \+ memberchk(F,Descendants)),
   % find a pfcJustificationDB.
-  supports(F,Supporters),
+  supports2(F,Supporters),
   % all of whose members are well founded.
   pfcWFF_L(Supporters,[F|Descendants]),
   !.
@@ -624,7 +665,7 @@ pfcWFF_L([X|Rest],L) :-
 % together allow one to deduce F.  One of the facts will typically be a rule.
 % The supports for a pcfUser-defined fact are: [pcfUser].
 
-supports(F,[Fact|MoreFacts]) :-
+supports2(F,[Fact|MoreFacts]) :-
   pfcGetSupport(F,(Fact,Trigger)),
   triggerSupports(Trigger,MoreFacts).
 
@@ -689,13 +730,13 @@ pfcRunPT(Fact,F) :-
 		[F,Body]),
   pfcEvalLHS(Body,(Fact,trigPos(F,Body))),
   fail.
-
 %pfcRunPT(Fact,F) :- 
 %  pfcGetTriggerQuick(trigPos(presently(F),Body)),
 %  pfcEvalLHS(Body,(presently(Fact),trigPos(presently(F),Body))),
 %  fail.
-
 pfcRunPT(_,_).
+
+
 
 pfcRunNT(_Fact,F) :-
   support3(trigNeg(F,Condition,Body),X,_),
@@ -712,8 +753,8 @@ pfcRunNT(_,_).
 
 pfcDefineBcRule(Head,_Body,ParentRule) :-
   ( \+ mpred_literal(Head)),
-  mpred_warn("Malformed backward chaining rule.  ~w not atomic.",[Head]),
-  mpred_warn("rule: ~w",[ParentRule]),
+  mpred_warn("Malformed backward chaining rule.  ~p not atomic.",[Head]),
+  mpred_warn("rule: ~p",[ParentRule]),
   !,
   fail.
 
@@ -753,7 +794,7 @@ pfcEvalLHS(X,Support) :-
 %  pfcEvalLHS(X,Support).
 
 pfcEvalLHS(X,_) :-
-  mpred_warn("Unrecognized item found in trigger body, namely ~w.",[X]).
+  mpred_warn("Unrecognized item found in trigger body, namely ~p.",[X]).
 
 
 %%
@@ -788,7 +829,7 @@ mpred_eval_rhs1(Assertion,Support) :-
 
 
 mpred_eval_rhs1(X,_) :-
-  mpred_warn("Malformed rhs of a rule: ~w",[X]).
+  mpred_warn("Malformed rhs of a rule: ~p",[X]).
 
 
 %%
@@ -914,7 +955,7 @@ mpred_nf1(P,[P]) :-
 
 %%% shouln't we have something to catch the rest as errors?
 mpred_nf1(Term,[Term]) :-
-  mpred_warn("mpred_nf doesn't know how to normalize ~w",[Term]).
+  mpred_warn("mpred_nf doesn't know how to normalize ~p",[Term]).
 
 
 %% mpred_nf1_negation(P,NF) is true if NF is the normal form of \+P.
@@ -1200,7 +1241,7 @@ pfcRemSupport(P,(Fact,Trigger)) :-
 
 
 mpred_collect_supports(Tripples) :-
-  bagof(Tripple, mpred_support_relation(Tripple), Tripples),
+  bagof_or_nil(Tripple, mpred_support_relation(Tripple), Tripples),
   !.
 mpred_collect_supports([]).
 
@@ -1306,14 +1347,12 @@ pfcRetractOrWarn(X) :-
 mpred_queue :- listing(mpred_queue/1).
 
 pfcPrintDB :-
-  pfcPrintFacts,
-  pfcPrintRules,
-  pfcPrintTriggers,
-  pfcPrintSupports,
-  mpred_queue,!.
+  maplist(must,[
+   pfcPrintFacts,
+   pfcPrintRules]).
 
-pfcPrintDB :-
-  must_det_l([
+pfcPrintDB_Full :-
+  maplist(must,[
    pfcPrintFacts,
    pfcPrintRules,
    pfcPrintTriggers,
@@ -1329,19 +1368,35 @@ pfcPrintFacts(Pattern) :- pfcPrintFacts(Pattern,true).
 pfcPrintFacts(P,C) :-
   pfcFacts(P,C,L),
   pfcClassifyFacts(L,User,Pfc,_Rule),
-  format("~n~nUser added facts:",[]),
+  format("~n~n% User added facts:",[]),
   pfcPrintitems(User),
-  format("~n~nPfc added facts:",[]),
-  pfcPrintitems(Pfc).
+  format("~n~n% Pfc added facts:",[]),
+  pfcPrintitemsWhy(Pfc).
 
 
 %% printitems clobbers it's arguments - beware!
 
-pfcPrintitems([]).
-pfcPrintitems([H|T]) :-
-  numbervars(H,0,_),
-  format("~n  ~w",[H]),
-  pfcPrintitems(T).
+pfcPrintitems(List) :- maplist(pfcPrintItem,List),nl.
+pfcPrintitemsWhy(List) :- maplist(pfcPrintItemWhy,List),nl.
+
+pfcPrintItemWhy(P):- pfcGetSupport(P,S),!,pfcPrintItem(S>P).
+pfcPrintItemWhy(P):- pfcPrintItem(P).
+
+pfcPrintItem(S>P):- from_user(S),!,pfcPrintItem(P).
+pfcPrintItem(_>P):- 
+  format("~N% ====~n",[]),
+  pfcJustification_L(P,Js),
+  format("~N ~p.",[P]),
+  mpred_showJustification1(Js,1),!,
+  format("~N% ====~n~n",[]),!.
+pfcPrintItem(S>P):- !,
+  numbervars(P:S,0,_),
+   format("~N % support ~p ~N",[S]),
+   format("~N ~p.~N~n",[P]),!.
+pfcPrintItem(P):-
+  numbervars(P,0,_),
+  format("~N ~p.~N",[P]),!.
+
 
 pfcClassifyFacts([],[],[],[]).
 
@@ -1351,35 +1406,35 @@ pfcClassifyFacts([H|T],User,Pfc,[H|Rule]) :-
   pfcClassifyFacts(T,User,Pfc,Rule).
 
 pfcClassifyFacts([H|T],[H|User],Pfc,Rule) :-
-  pfcGetSupport(H,(pcfUser,pcfUser)),
-  !,
+  user_supported(H),!,
   pfcClassifyFacts(T,User,Pfc,Rule).
 
 pfcClassifyFacts([H|T],User,[H|Pfc],Rule) :-
   pfcClassifyFacts(T,User,Pfc,Rule).
 
 pfcPrintRules :-
-  bagof((P==>Q),db_clause((P==>Q),true),R1),
-  pfcPrintitems(R1),
-  bagof((P<==>Q),db_clause((P<==>Q),true),R2),
-  pfcPrintitems(R2),
-  bagof((P<-Q),db_clause((P<-Q),true),R3),
-  pfcPrintitems(R3).
+  format("% Rules...~n",[]),
+  bagof_or_nil((P==>Q),db_clause((P==>Q),true),R1),
+  pfcPrintitemsWhy(R1),
+  bagof_or_nil((P<==>Q),db_clause((P<==>Q),true),R2),
+  pfcPrintitemsWhy(R2),
+  bagof_or_nil((P<-Q),db_clause((P<-Q),true),R3),
+  pfcPrintitemsWhy(R3).
 
 pfcPrintTriggers :-
-  format("Positive triggers...~n",[]),
-  bagof(trigPos(T,B),pfcGetTrigger(trigPos(T,B)),Pts),
+  format("% Positive triggers...~n",[]),
+  bagof_or_nil(trigPos(T,B),pfcGetTrigger(trigPos(T,B)),Pts),
   pfcPrintitems(Pts),
-  format("Negative triggers...~n",[]),
-  bagof(trigNeg(A,B,C),pfcGetTrigger(trigNeg(A,B,C)),Nts),
+  format("% Negative triggers...~n",[]),
+  bagof_or_nil(trigNeg(A,B,C),pfcGetTrigger(trigNeg(A,B,C)),Nts),
   pfcPrintitems(Nts),
-  format("Goal triggers...~n",[]),
-  bagof(trigBC(A,B),pfcGetTrigger(trigBC(A,B)),Bts),
+  format("% Goal triggers...~n",[]),
+  bagof_or_nil(trigBC(A,B),pfcGetTrigger(trigBC(A,B)),Bts),
   pfcPrintitems(Bts).
 
 pfcPrintSupports :- 
   % temporary hack.
-  setof((S > P), pfcGetSupport(P,S),L),
+  setof_or_nil((S > P), pfcGetSupport(P,S),L),
   pfcPrintitems(L).
 
 %% pfcFact(P) is true if fact P was asserted into the database via add.
@@ -1405,7 +1460,7 @@ pfcFacts(P,L) :- pfcFacts(P,true,L).
 
 %% pfcFacts(Pattern,Condition,-ListofPfcFacts) returns a list of facts added.
 
-pfcFacts(P,C,L) :- setof(P,pfcFact(P,C),L).
+pfcFacts(P,C,L) :- setof_or_nil(P,pfcFact(P,C),L).
 
 brake(X) :-  X, break.
 
@@ -1430,14 +1485,17 @@ pfcTraceAdd(P,S) :-
    pfcTraceBreak(P,S).
    
 
+user_supported(P):- pfcGetSupport(P,S), from_user(S),!.
+from_user(S):- S=(pcfUser,pcfUser).
+
 pfcTraceAddPrint(P,S) :-
   mpred_settings(traced,P),
   !,
-  copy_term(P,Pcopy),
-  numbervars(Pcopy,0,_),
-  (S=(pcfUser,pcfUser)
-       -> format("~nAdding (u) ~w",[Pcopy])
-        ; format("~nAdding (g) ~w",[Pcopy])).
+  copy_term(P:S,Pcopy:Scopy),
+  numbervars(Pcopy:Scopy,0,_),
+  (from_user(S)
+       -> format("~NAdding (u) ~p~n",[Pcopy])
+        ; format("~NAdding (g) ~p          % WHY ~p.",[Pcopy,Scopy])).
 
 pfcTraceAddPrint(_,_).
 
@@ -1446,7 +1504,7 @@ pfcTraceBreak(P,_S) :-
   mpred_settings(spied,P,add) -> 
    (copy_term(P,Pcopy),
     numbervars(Pcopy,0,_),
-    format("~nBreaking on ain(~w)",[Pcopy]),
+    format("~nBreaking on ain(~p)",[Pcopy]),
     break)
    ; true.
 
@@ -1459,10 +1517,10 @@ pfcTraceRem(trigNeg(_,_)) :-
 
 pfcTraceRem(P) :-
   (mpred_settings(traced,P) 
-     -> format('~nRemoving ~w.',[P])
+     -> format('~nRemoving ~p.',[P])
       ; true),
   (mpred_settings(spied,P,pfcRem)
-   -> (format("~nBreaking on pfcRem(~w)",[P]),
+   -> (format("~nBreaking on pfcRem(~p)",[P]),
        break)
    ; true).
 
@@ -1584,10 +1642,10 @@ pfcNoWarnings :-
 
 pfcJustificationDB(F,J) :- justSupports(F,J).
 
-pfcJustification_L(F,Js) :- bagof(J,pfcJustificationDB(F,J),Js).
+pfcJustification_L(F,Js) :- bagof_or_nil(J,pfcJustificationDB(F,J),Js).
 
 
-justSupports(F,J):- support2(F,J).
+justSupports(F,J):- supports2(F,J).
 
 %% pfcBase1(P,L) - is true iff L is a list of "pfcBase1" facts which, taken
 %% together, allows us to deduce P.  A pfcBase1 fact is an pfcAxiom (a fact 
@@ -1612,7 +1670,7 @@ pfcBases([X|Rest],L) :-
   pfcUnion(Bx,Br,L).
 	
 pfcAxiom(F) :- 
-  pfcGetSupport(F,(pcfUser,pcfUser)); 
+  user_supported(F); 
   pfcGetSupport(F,(pfcGod,pfcGod)).
 
 %% an pfcAssumptionBase is a failed goal, i.e. were assuming that our failure to 
@@ -1654,7 +1712,7 @@ pfcChild(P,Q) :-
   mpred_db_type(Trig,trigger),
   pfcChild(P,Trig).
 
-pfcChildren(P,L) :- bagof(C,pfcChild(P,C),L).
+pfcChildren(P,L) :- bagof_or_nil(C,pfcChild(P,C),L).
 
 % pfcDescendant(P,Q) is true iff P is a justifier for Q.
 
@@ -1667,7 +1725,7 @@ pfcDescendant1(P,Q,Seen) :-
   (P=X ; pfcDescendant1(P,X,[X|Seen])).
   
 pfcDescendants(P,L) :- 
-  bagof(Q,pfcDescendant1(P,Q,[]),L).
+  bagof_or_nil(Q,pfcDescendant1(P,Q,[]),L).
 
 
 
@@ -1685,14 +1743,16 @@ pfcDescendants(P,L) :-
 :- use_module(library(lists)).
 
 pfcWhy :- 
-  pfcWhyMemory1(P,_),
-  pfcWhy(P).
+  forall(
+   pfcWhyMemory1(P,_),
+   pfcWhy(P)).
 
 pfcWhy(N) :-
   number(N),
   !,
   pfcWhyMemory1(P,Js),
   pfcWhyCommand(N,P,Js).
+
 
 pfcWhy(P) :-
   pfcJustification_L(P,Js),
@@ -1733,15 +1793,15 @@ pfcWhyCommand(u,_,_) :-
 pfcCommand(N,_,_) :-
   integer(N),
   !,
-  format("~n~w is a yet unimplemented command.",[N]),
+  format("~n~p is a yet unimplemented command.",[N]),
   fail.
 
 pfcCommand(X,_,_) :-
- format("~n~w is an unrecognized command, enter h. for help.",[X]),
+ format("~n~p is an unrecognized command, enter h. for help.",[X]),
  fail.
   
 mpred_showJustifications(P,Js) :-
-  format("~nJustifications for ~w:",[P]),
+  format("~nJustifications for ~p:",[P]),
   mpred_showJustification1(Js,1).
 
 mpred_showJustification1([],_).
@@ -1758,12 +1818,21 @@ mpred_showJustifications2([],_,_).
 mpred_showJustifications2([C|Rest],JustNo,StepNo) :- 
   copy_term(C,CCopy),
   numbervars(CCopy,0,_),
-  format("~n    ~w.~w ~w",[JustNo,StepNo,CCopy]),
+  format("~n%    ~p.~p ~p",[JustNo,StepNo,CCopy]),
   StepNext is 1+StepNo,
   mpred_showJustifications2(Rest,JustNo,StepNext).
 
+
+pfcShowWhy(P) :-
+ \+ \+ 
+((numbervars(P,0,_),
+  dmsg(""),
+  dmsg(pfcShowWhy(P)),
+  forall(pfcJustification_L(P,Js),
+  mpred_showJustifications(P,Js)))).
+
 pfcAskUser(Msg,Ans) :-
-  format("~n~w",[Msg]),
+  format("~n~p",[Msg]),
   read(Ans).
 
 mpred_selectJustificationNode(Js,Index,Step) :-
@@ -1773,8 +1842,21 @@ mpred_selectJustificationNode(Js,Index,Step) :-
   nth(StepNo,Justification,Step).
 
 :- mpred_trace.
+ :-
+  ain_test([
+	(j(X), k(Y) ==> bothJK(X,Y)),
+	(bothJK(X,Y), go ==> jkGo(X,Y)),
+	j(1),
+	go,
+	k(2),
+        {pfcShowWhy(bothJK(1,2))}        
+       ]).
+
+:- prolog.
+
+:- mpred_trace.
 :- 
-    ain([(faz(X), ~baz(Y)/{X=:=Y} ==> fazbaz(X)),
+    ain_test([(faz(X), ~baz(Y)/{X=:=Y} ==> fazbaz(X)),
          (fazbaz(X), go ==> found(X)),
 	 (found(X), {X>=100} ==> big(X)),
 	 (found(X), {X>=10,X<100} ==> medium(X)),
@@ -1784,10 +1866,11 @@ mpred_selectJustificationNode(Js,Index,Step) :-
 	 baz(2),
 	 baz(1)
 	]).
+
 :- mpred_trace.
 
 %:- prolog.    
 
-:- include(tml_fwd_test_2_0).
+%:- include(tml_fwd_test_2_0).
 
-:- run_tests.
+%:- run_tests.

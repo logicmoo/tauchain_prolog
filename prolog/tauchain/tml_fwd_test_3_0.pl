@@ -8,7 +8,7 @@
 %
 */
 
-:- include('mpred_header.pi').
+%:- include('mpred_header.pi').
 
 
 % user:term_expansion(A,B):- \+ t_l:disable_px, current_predicate(pfcExpansion_loaded/0),loop_check(mpred_file_expansion(A,B)),A\=@=B.
