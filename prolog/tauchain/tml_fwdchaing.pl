@@ -167,16 +167,17 @@ mpred_default(GeneralTerm,Default) :-
 
 %% ain(P,S) asserts P into the dataBase with support from S.
 
+:- abolish(ain/1).
 ain(P) :-  ain(P,(pcfUser,pcfUser)).
 
-ain((==>P),S) :- ain(P,S).
+ain((==>P),S) :- !, ain(P,S).
 
 ain(P,S) :- 
   pfcPost(P,S),
   pfcRun.
 
 %ain(_,_).
-%ain(P,S) :- mpred_warn("ain(~w,~w) failed",[P,S]).
+ain(P,S) :- mpred_warn("ain(~w,~w) failed",[P,S]).
 
 
 % pfcPost(+Ps,+S) tries to add a fact or set of fact to the database.  For
@@ -298,6 +299,7 @@ remove_selection(P) :-
   pfcRetract(mpred_queue(P)),
   pfcRemoveSupportsQuietly(mpred_queue(P)),
   !.
+  
 remove_selection(P) :-
   brake(format("~Npfc:get_next_fact - selected fact not on Queue: ~w",
                [P])).
@@ -1784,8 +1786,8 @@ mpred_selectJustificationNode(Js,Index,Step) :-
 	]).
 :- mpred_trace.
 
-:- prolog.    
+%:- prolog.    
 
-:- include(mpred_tests).
+:- include(tml_fwd_test_2_0).
 
 :- run_tests.

@@ -22,12 +22,7 @@ check_tml_sample(Name:Data):-
    run_tml(SData),
    writeln('````'),!.
 
-
-
-:- tml_examples(List), 
-   maplist(check_tml_sample,List).
-
-
+      
 % :- set_prolog_flag(back_quotes,string).
 
 
@@ -570,6 +565,12 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
        ~e ?x ?x :- e ?x ?x.
 }
 ").
+
+
+
+
+:- tml_examples(List), 
+   maplist(check_tml_sample,List).
 
 
 
