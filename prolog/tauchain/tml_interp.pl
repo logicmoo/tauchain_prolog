@@ -35,7 +35,7 @@ check_tml_sample(Name:Data):-
   text_to_string(Data,SData),
   assert(tml_sample_name_data(Name,SData)),
   upcase_atom(Name,UNAME),
-   format("~N~n= TEST ~w~n", UNAME),
+   format("~N~n# TEST ~w~n", UNAME),
    format('~N````~n~s~N````~n',SData),
    writeln('````'),
    dmsg("===PROCESS===================="),
