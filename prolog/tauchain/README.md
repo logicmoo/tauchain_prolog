@@ -1,5 +1,4 @@
 ````
-
 Adding (u) j(A),k(B)==>bothJK(A,B)
 Adding (u) bothJK(A,B),go==>jkGo(A,B)
 Adding (u) j(1)
@@ -26,7 +25,7 @@ Justifications for bothJK(1,2):
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  bothJK(1,2).
 
@@ -83,7 +82,7 @@ Removing fazbaz(1).
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  found(1).
 
@@ -193,7 +192,7 @@ TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 # they are terminated by the '.' character
 # like sentences in English.
 ````
-% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_testing.pl:579
+% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl:47
 % ===PROCESS====================
 ````
 % ===SUCESSS====================
@@ -202,7 +201,7 @@ TML: '@finline'([a(b,c,d),(not(e(X,X)):-e(X,X))]).
 % User added facts:
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % Rules...
 
 
@@ -259,7 +258,7 @@ Adding (u) beginsWithJ('Joe')
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % Rules...
 
 
@@ -338,7 +337,7 @@ Adding (u) employee('Jane','Doe',support)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % Rules...
 
 
@@ -418,7 +417,7 @@ Adding (u) a(1,2,3,4,5,6)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % Rules...
 
 
@@ -470,7 +469,7 @@ Adding (u) bellowZero==>freezing
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  wet.
 
@@ -521,7 +520,7 @@ Adding (g) holds(2,1)          % WHY holds(1,2),trigPos(holds(1,2),rhs([holds(2,
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  holds(2,1).
 
@@ -566,7 +565,7 @@ Adding (g) salutation('Suzi','Madam')          % WHY employee('Suzi',female),tri
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  salutation('Suzi','Madam').
 
@@ -646,11 +645,16 @@ Adding (u) bird('Coco')
 TML: cat('Bella').
 Adding (u) cat('Bella')
 TML: canFly(SOMETHING):-bird(SOMETHING).
-Adding (u) bird(SOMETHING)==>canFly(SOMETHING)
+Adding (u) bird(A)==>canFly(A)
+Adding (g) canFly('Charlie')          % WHY bird('Charlie'),trigPos(bird(A),rhs([canFly(A)])).
+Adding (g) canFly('Coco')          % WHY bird('Coco'),trigPos(bird(A),rhs([canFly(A)])).
 TML: beeps(SOME):-bird(SOME).
-Adding (u) bird(SOME)==>beeps(SOME)
+Adding (u) bird(A)==>beeps(A)
+Adding (g) beeps('Charlie')          % WHY bird('Charlie'),trigPos(bird(A),rhs([beeps(A)])).
+Adding (g) beeps('Coco')          % WHY bird('Coco'),trigPos(bird(A),rhs([beeps(A)])).
 TML: meows(SOME):-cat(SOME).
-Adding (u) cat(SOME)==>meows(SOME)
+Adding (u) cat(A)==>meows(A)
+Adding (g) meows('Bella')          % WHY cat('Bella'),trigPos(cat(A),rhs([meows(A)])).
 TML: employee('Suzi',female).
 Adding (u) employee('Suzi',female)
 TML: employee('John',male).
@@ -658,21 +662,28 @@ Adding (u) employee('John',male)
 TML: employee('Jane',female).
 Adding (u) employee('Jane',female)
 TML: salutation(PERSON,'Madam'):-employee(PERSON,female).
-Adding (u) employee(PERSON,female)==>salutation(PERSON,'Madam')
+Adding (u) employee(A,female)==>salutation(A,'Madam')
+Adding (g) salutation('Suzi','Madam')          % WHY employee('Suzi',female),trigPos(employee(A,female),rhs([salutation(A,'Madam')])).
+Adding (g) salutation('Jane','Madam')          % WHY employee('Jane',female),trigPos(employee(A,female),rhs([salutation(A,'Madam')])).
 TML: salutation(PERSON,'Sir'):-employee(PERSON,male).
-Adding (u) employee(PERSON,male)==>salutation(PERSON,'Sir')
+Adding (u) employee(A,male)==>salutation(A,'Sir')
+Adding (g) salutation('John','Sir')          % WHY employee('John',male),trigPos(employee(A,male),rhs([salutation(A,'Sir')])).
 TML: parent(X,Y):-father(X,Y).
-Adding (u) father(X,Y)==>parent(X,Y)
+Adding (u) father(A,B)==>parent(A,B)
 TML: parent(X,Y):-mother(X,Y).
-Adding (u) mother(X,Y)==>parent(X,Y)
+Adding (u) mother(A,B)==>parent(A,B)
 TML: father('Coco','Charlie').
 Adding (u) father('Coco','Charlie')
+Adding (g) parent('Coco','Charlie')          % WHY father('Coco','Charlie'),trigPos(father('Coco','Charlie'),rhs([parent('Coco','Charlie')])).
 TML: mother('Suzi','John').
 Adding (u) mother('Suzi','John')
+Adding (g) parent('Suzi','John')          % WHY mother('Suzi','John'),trigPos(mother('Suzi','John'),rhs([parent('Suzi','John')])).
 TML: bird('John').
 Adding (u) bird('John')
-% ===SUCESSS====================
+Adding (g) canFly('John')          % WHY bird('John'),trigPos(bird('John'),rhs([canFly('John')])).
 
+% ===SUCESSS====================
+Adding (g) beeps('John')          % WHY bird('John'),trigPos(bird('John'),rhs([beeps('John')])).
 
 % User added facts:
  bird('Charlie').
@@ -687,15 +698,100 @@ Adding (u) bird('John')
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ beeps('Charlie').
+
+%    1.1 bird('Charlie')
+%    1.2 bird(A)==>beeps(A)
+% ====
+
+% ====
+ beeps('Coco').
+
+%    1.1 bird('Coco')
+%    1.2 bird(A)==>beeps(A)
+% ====
+
+% ====
+ beeps('John').
+
+%    1.1 bird('John')
+%    1.2 bird(A)==>beeps(A)
+% ====
+
+% ====
+ canFly('Charlie').
+
+%    1.1 bird('Charlie')
+%    1.2 bird(A)==>canFly(A)
+% ====
+
+% ====
+ canFly('Coco').
+
+%    1.1 bird('Coco')
+%    1.2 bird(A)==>canFly(A)
+% ====
+
+% ====
+ canFly('John').
+
+%    1.1 bird('John')
+%    1.2 bird(A)==>canFly(A)
+% ====
+
+% ====
+ meows('Bella').
+
+%    1.1 cat('Bella')
+%    1.2 cat(A)==>meows(A)
+% ====
+
+% ====
+ parent('Coco','Charlie').
+
+%    1.1 father('Coco','Charlie')
+%    1.2 father(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('Suzi','John').
+
+%    1.1 mother('Suzi','John')
+%    1.2 mother(A,B)==>parent(A,B)
+% ====
+
+% ====
+ salutation('Jane','Madam').
+
+%    1.1 employee('Jane',female)
+%    1.2 employee(A,female)==>salutation(A,'Madam')
+% ====
+
+% ====
+ salutation('John','Sir').
+
+%    1.1 employee('John',male)
+%    1.2 employee(A,male)==>salutation(A,'Sir')
+% ====
+
+% ====
+ salutation('Suzi','Madam').
+
+%    1.1 employee('Suzi',female)
+%    1.2 employee(A,female)==>salutation(A,'Madam')
+% ====
+
+
 % Rules...
- bird(SOMETHING)==>canFly(SOMETHING).
- bird(SOME)==>beeps(SOME).
- cat(SOME)==>meows(SOME).
- employee(PERSON,female)==>salutation(PERSON,'Madam').
- employee(PERSON,male)==>salutation(PERSON,'Sir').
- father(X,Y)==>parent(X,Y).
- mother(X,Y)==>parent(X,Y).
+ bird(A)==>canFly(A).
+ bird(A)==>beeps(A).
+ cat(A)==>meows(A).
+ employee(A,female)==>salutation(A,'Madam').
+ employee(A,male)==>salutation(A,'Sir').
+ father(A,B)==>parent(A,B).
+ mother(A,B)==>parent(A,B).
 
 
 
@@ -740,35 +836,44 @@ female Suzi.
 % ===PROCESS====================
 ````
 TML: boy(X):-child(X),male(X).
-Adding (u) child(X),male(X)==>boy(X)
+Adding (u) child(A),male(A)==>boy(A)
 TML: girl(X):-child(X),female(X).
-Adding (u) child(X),female(X)==>girl(X)
+Adding (u) child(A),female(A)==>girl(A)
 TML: human(X):-child(X).
-Adding (u) child(X)==>human(X)
+Adding (u) child(A)==>human(A)
 TML: human(X):-adult(X).
-Adding (u) adult(X)==>human(X)
+Adding (u) adult(A)==>human(A)
 TML: adult('Amy').
 Adding (u) adult('Amy')
+Adding (g) human('Amy')          % WHY adult('Amy'),trigPos(adult('Amy'),rhs([human('Amy')])).
 TML: child('John').
 Adding (u) child('John')
+Adding (g) human('John')          % WHY child('John'),trigPos(child('John'),rhs([human('John')])).
 TML: child('Jack').
 Adding (u) child('Jack')
+Adding (g) human('Jack')          % WHY child('Jack'),trigPos(child('Jack'),rhs([human('Jack')])).
 TML: child('Jane').
 Adding (u) child('Jane')
+Adding (g) human('Jane')          % WHY child('Jane'),trigPos(child('Jane'),rhs([human('Jane')])).
 TML: child('Suzi').
 Adding (u) child('Suzi')
+Adding (g) human('Suzi')          % WHY child('Suzi'),trigPos(child('Suzi'),rhs([human('Suzi')])).
 TML: male('John').
 Adding (u) male('John')
+Adding (g) boy('John')          % WHY male('John'),trigPos(male('John'),rhs([boy('John')])).
 TML: male('Jack').
 Adding (u) male('Jack')
+Adding (g) boy('Jack')          % WHY male('Jack'),trigPos(male('Jack'),rhs([boy('Jack')])).
 TML: female('Amy').
 Adding (u) female('Amy')
 TML: female('Jane').
 Adding (u) female('Jane')
+Adding (g) girl('Jane')          % WHY female('Jane'),trigPos(female('Jane'),rhs([girl('Jane')])).
 TML: female('Suzi').
 Adding (u) female('Suzi')
-% ===SUCESSS====================
 
+% ===SUCESSS====================
+Adding (g) girl('Suzi')          % WHY female('Suzi'),trigPos(female('Suzi'),rhs([girl('Suzi')])).
 
 % User added facts:
  adult('Amy').
@@ -784,12 +889,80 @@ Adding (u) female('Suzi')
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ boy('Jack').
+
+%    1.1 male('Jack')
+%    1.2 child('Jack')
+%    1.3 child(A),male(A)==>boy(A)
+% ====
+
+% ====
+ boy('John').
+
+%    1.1 male('John')
+%    1.2 child('John')
+%    1.3 child(A),male(A)==>boy(A)
+% ====
+
+% ====
+ girl('Jane').
+
+%    1.1 female('Jane')
+%    1.2 child('Jane')
+%    1.3 child(A),female(A)==>girl(A)
+% ====
+
+% ====
+ girl('Suzi').
+
+%    1.1 female('Suzi')
+%    1.2 child('Suzi')
+%    1.3 child(A),female(A)==>girl(A)
+% ====
+
+% ====
+ human('Amy').
+
+%    1.1 adult('Amy')
+%    1.2 adult(A)==>human(A)
+% ====
+
+% ====
+ human('Jack').
+
+%    1.1 child('Jack')
+%    1.2 child(A)==>human(A)
+% ====
+
+% ====
+ human('Jane').
+
+%    1.1 child('Jane')
+%    1.2 child(A)==>human(A)
+% ====
+
+% ====
+ human('John').
+
+%    1.1 child('John')
+%    1.2 child(A)==>human(A)
+% ====
+
+% ====
+ human('Suzi').
+
+%    1.1 child('Suzi')
+%    1.2 child(A)==>human(A)
+% ====
+
+
 % Rules...
- child(X),male(X)==>boy(X).
- child(X),female(X)==>girl(X).
- child(X)==>human(X).
- adult(X)==>human(X).
+ child(A),male(A)==>boy(A).
+ child(A),female(A)==>girl(A).
+ child(A)==>human(A).
+ adult(A)==>human(A).
 
 
 
@@ -842,11 +1015,22 @@ Adding (u) parent('Grace','Amy')
 TML: parent('Tom','Amy').
 Adding (u) parent('Tom','Amy')
 TML: ancestor(ANC,CHILD):-parent(ANC,CHILD).
-Adding (u) parent(ANC,CHILD)==>ancestor(ANC,CHILD)
+Adding (u) parent(A,B)==>ancestor(A,B)
+Adding (g) ancestor('Fred','Sue')          % WHY parent('Fred','Sue'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Jack','Fred')          % WHY parent('Jack','Fred'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Amy','Fred')          % WHY parent('Amy','Fred'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Grace','Amy')          % WHY parent('Grace','Amy'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Tom','Amy')          % WHY parent('Tom','Amy'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
 TML: ancestor(ANC,DESC):-parent(ANC,CHILD),ancestor(CHILD,DESC).
-Adding (u) parent(ANC,CHILD),ancestor(CHILD,DESC)==>ancestor(ANC,DESC)
-% ===SUCESSS====================
+Adding (u) parent(A,B),ancestor(B,C)==>ancestor(A,C)
+Adding (g) ancestor('Jack','Sue')          % WHY ancestor('Fred','Sue'),trigPos(ancestor('Fred',A),rhs([ancestor('Jack',A)])).
+Adding (g) ancestor('Amy','Sue')          % WHY ancestor('Fred','Sue'),trigPos(ancestor('Fred',A),rhs([ancestor('Amy',A)])).
+Adding (g) ancestor('Grace','Fred')          % WHY ancestor('Amy','Fred'),trigPos(ancestor('Amy',A),rhs([ancestor('Grace',A)])).
+Adding (g) ancestor('Grace','Sue')          % WHY ancestor('Amy','Sue'),trigPos(ancestor('Amy',A),rhs([ancestor('Grace',A)])).
+Adding (g) ancestor('Tom','Fred')          % WHY ancestor('Amy','Fred'),trigPos(ancestor('Amy',A),rhs([ancestor('Tom',A)])).
 
+% ===SUCESSS====================
+Adding (g) ancestor('Tom','Sue')          % WHY ancestor('Amy','Sue'),trigPos(ancestor('Amy',A),rhs([ancestor('Tom',A)])).
 
 % User added facts:
  parent('Amy','Fred').
@@ -857,10 +1041,94 @@ Adding (u) parent(ANC,CHILD),ancestor(CHILD,DESC)==>ancestor(ANC,DESC)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ ancestor('Amy','Fred').
+
+%    1.1 parent('Amy','Fred')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Amy','Sue').
+
+%    1.1 ancestor('Fred','Sue')
+%    1.2 parent('Amy','Fred')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Fred','Sue').
+
+%    1.1 parent('Fred','Sue')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Grace','Amy').
+
+%    1.1 parent('Grace','Amy')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Grace','Fred').
+
+%    1.1 ancestor('Amy','Fred')
+%    1.2 parent('Grace','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Grace','Sue').
+
+%    1.1 ancestor('Amy','Sue')
+%    1.2 parent('Grace','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Jack','Fred').
+
+%    1.1 parent('Jack','Fred')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Jack','Sue').
+
+%    1.1 ancestor('Fred','Sue')
+%    1.2 parent('Jack','Fred')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Tom','Amy').
+
+%    1.1 parent('Tom','Amy')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Tom','Fred').
+
+%    1.1 ancestor('Amy','Fred')
+%    1.2 parent('Tom','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Tom','Sue').
+
+%    1.1 ancestor('Amy','Sue')
+%    1.2 parent('Tom','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+
 % Rules...
- parent(ANC,CHILD)==>ancestor(ANC,CHILD).
- parent(ANC,CHILD),ancestor(CHILD,DESC)==>ancestor(ANC,DESC).
+ parent(A,B)==>ancestor(A,B).
+ parent(A,B),ancestor(B,C)==>ancestor(A,C).
 
 
 
@@ -912,11 +1180,37 @@ Adding (u) e(5,1)
 TML: e(8,9).
 Adding (u) e(8,9)
 TML: tc(X,Y):-e(X,Y).
-Adding (u) e(X,Y)==>tc(X,Y)
+Adding (u) e(A,B)==>tc(A,B)
+Adding (g) tc(1,2)          % WHY e(1,2),trigPos(e(A,B),rhs([tc(A,B)])).
+Adding (g) tc(2,3)          % WHY e(2,3),trigPos(e(A,B),rhs([tc(A,B)])).
+Adding (g) tc(3,4)          % WHY e(3,4),trigPos(e(A,B),rhs([tc(A,B)])).
+Adding (g) tc(4,5)          % WHY e(4,5),trigPos(e(A,B),rhs([tc(A,B)])).
+Adding (g) tc(5,1)          % WHY e(5,1),trigPos(e(A,B),rhs([tc(A,B)])).
+Adding (g) tc(8,9)          % WHY e(8,9),trigPos(e(A,B),rhs([tc(A,B)])).
 TML: tc(X,Y):-tc(X,Z),e(Z,Y).
-Adding (u) tc(X,Z),e(Z,Y)==>tc(X,Y)
-% ===SUCESSS====================
+Adding (u) tc(A,B),e(B,C)==>tc(A,C)
+Adding (g) tc(1,3)          % WHY e(2,3),trigPos(e(2,A),rhs([tc(1,A)])).
+Adding (g) tc(1,4)          % WHY e(3,4),trigPos(e(3,A),rhs([tc(1,A)])).
+Adding (g) tc(1,5)          % WHY e(4,5),trigPos(e(4,A),rhs([tc(1,A)])).
+Adding (g) tc(1,1)          % WHY e(5,1),trigPos(e(5,A),rhs([tc(1,A)])).
+Adding (g) tc(2,4)          % WHY e(3,4),trigPos(e(3,A),rhs([tc(2,A)])).
+Adding (g) tc(2,5)          % WHY e(4,5),trigPos(e(4,A),rhs([tc(2,A)])).
+Adding (g) tc(2,1)          % WHY e(5,1),trigPos(e(5,A),rhs([tc(2,A)])).
+Adding (g) tc(2,2)          % WHY e(1,2),trigPos(e(1,A),rhs([tc(2,A)])).
+Adding (g) tc(3,5)          % WHY e(4,5),trigPos(e(4,A),rhs([tc(3,A)])).
+Adding (g) tc(3,1)          % WHY e(5,1),trigPos(e(5,A),rhs([tc(3,A)])).
+Adding (g) tc(3,2)          % WHY e(1,2),trigPos(e(1,A),rhs([tc(3,A)])).
+Adding (g) tc(3,3)          % WHY e(2,3),trigPos(e(2,A),rhs([tc(3,A)])).
+Adding (g) tc(4,1)          % WHY e(5,1),trigPos(e(5,A),rhs([tc(4,A)])).
+Adding (g) tc(4,2)          % WHY e(1,2),trigPos(e(1,A),rhs([tc(4,A)])).
+Adding (g) tc(4,3)          % WHY e(2,3),trigPos(e(2,A),rhs([tc(4,A)])).
+Adding (g) tc(4,4)          % WHY e(3,4),trigPos(e(3,A),rhs([tc(4,A)])).
+Adding (g) tc(5,2)          % WHY e(1,2),trigPos(e(1,A),rhs([tc(5,A)])).
+Adding (g) tc(5,3)          % WHY e(2,3),trigPos(e(2,A),rhs([tc(5,A)])).
+Adding (g) tc(5,4)          % WHY e(3,4),trigPos(e(3,A),rhs([tc(5,A)])).
 
+% ===SUCESSS====================
+Adding (g) tc(5,5)          % WHY e(4,5),trigPos(e(4,A),rhs([tc(5,A)])).
 
 % User added facts:
  e(1,2).
@@ -928,10 +1222,368 @@ Adding (u) tc(X,Z),e(Z,Y)==>tc(X,Y)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ tc(1,1).
+
+%    1.1 e(5,1)
+%    1.2 tc(1,5)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(1,2).
+
+%    1.1 e(1,2)
+%    1.2 e(A,B)==>tc(A,B)
+
+%    2.1 e(1,2)
+%    2.2 tc(1,1)
+%    2.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    3.1 e(1,2)
+%    3.2 tc(2,2)
+%    3.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    4.1 e(1,2)
+%    4.2 tc(3,3)
+%    4.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    5.1 e(1,2)
+%    5.2 tc(4,4)
+%    5.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    6.1 e(1,2)
+%    6.2 tc(5,5)
+%    6.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    7.1 e(1,2)
+%    7.2 e(A,B)==>tc(A,B)
+
+%    8.1 e(1,2)
+%    8.2 tc(1,1)
+%    8.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(1,3).
+
+%    1.1 e(2,3)
+%    1.2 tc(1,2)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(1,4).
+
+%    1.1 e(3,4)
+%    1.2 tc(1,3)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(1,5).
+
+%    1.1 e(4,5)
+%    1.2 tc(1,4)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(2,1).
+
+%    1.1 e(5,1)
+%    1.2 tc(2,5)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(2,2).
+
+%    1.1 e(1,2)
+%    1.2 tc(2,1)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(2,3).
+
+%    1.1 e(2,3)
+%    1.2 e(A,B)==>tc(A,B)
+
+%    2.1 e(2,3)
+%    2.2 tc(1,1)
+%    2.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    3.1 e(2,3)
+%    3.2 tc(2,2)
+%    3.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    4.1 e(2,3)
+%    4.2 tc(3,3)
+%    4.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    5.1 e(2,3)
+%    5.2 tc(4,4)
+%    5.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    6.1 e(2,3)
+%    6.2 tc(5,5)
+%    6.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    7.1 e(2,3)
+%    7.2 e(A,B)==>tc(A,B)
+
+%    8.1 e(2,3)
+%    8.2 tc(2,2)
+%    8.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(2,4).
+
+%    1.1 e(3,4)
+%    1.2 tc(2,3)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(2,5).
+
+%    1.1 e(4,5)
+%    1.2 tc(2,4)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(3,1).
+
+%    1.1 e(5,1)
+%    1.2 tc(3,5)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(3,2).
+
+%    1.1 e(1,2)
+%    1.2 tc(3,1)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(3,3).
+
+%    1.1 e(2,3)
+%    1.2 tc(3,2)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(3,4).
+
+%    1.1 e(3,4)
+%    1.2 e(A,B)==>tc(A,B)
+
+%    2.1 e(3,4)
+%    2.2 tc(1,1)
+%    2.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    3.1 e(3,4)
+%    3.2 tc(2,2)
+%    3.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    4.1 e(3,4)
+%    4.2 tc(3,3)
+%    4.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    5.1 e(3,4)
+%    5.2 tc(4,4)
+%    5.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    6.1 e(3,4)
+%    6.2 tc(5,5)
+%    6.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    7.1 e(3,4)
+%    7.2 e(A,B)==>tc(A,B)
+
+%    8.1 e(3,4)
+%    8.2 tc(3,3)
+%    8.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(3,5).
+
+%    1.1 e(4,5)
+%    1.2 tc(3,4)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(4,1).
+
+%    1.1 e(5,1)
+%    1.2 tc(4,5)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(4,2).
+
+%    1.1 e(1,2)
+%    1.2 tc(4,1)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(4,3).
+
+%    1.1 e(2,3)
+%    1.2 tc(4,2)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(4,4).
+
+%    1.1 e(3,4)
+%    1.2 tc(4,3)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(4,5).
+
+%    1.1 e(4,5)
+%    1.2 e(A,B)==>tc(A,B)
+
+%    2.1 e(4,5)
+%    2.2 tc(1,1)
+%    2.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    3.1 e(4,5)
+%    3.2 tc(2,2)
+%    3.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    4.1 e(4,5)
+%    4.2 tc(3,3)
+%    4.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    5.1 e(4,5)
+%    5.2 tc(4,4)
+%    5.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    6.1 e(4,5)
+%    6.2 tc(5,5)
+%    6.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    7.1 e(4,5)
+%    7.2 e(A,B)==>tc(A,B)
+
+%    8.1 e(4,5)
+%    8.2 tc(4,4)
+%    8.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(5,1).
+
+%    1.1 e(5,1)
+%    1.2 e(A,B)==>tc(A,B)
+
+%    2.1 e(5,1)
+%    2.2 tc(1,1)
+%    2.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    3.1 e(5,1)
+%    3.2 tc(2,2)
+%    3.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    4.1 e(5,1)
+%    4.2 tc(3,3)
+%    4.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    5.1 e(5,1)
+%    5.2 tc(4,4)
+%    5.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    6.1 e(5,1)
+%    6.2 tc(5,5)
+%    6.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    7.1 e(5,1)
+%    7.2 e(A,B)==>tc(A,B)
+
+%    8.1 e(5,1)
+%    8.2 tc(5,5)
+%    8.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(5,2).
+
+%    1.1 e(1,2)
+%    1.2 tc(5,1)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(5,3).
+
+%    1.1 e(2,3)
+%    1.2 tc(5,2)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(5,4).
+
+%    1.1 e(3,4)
+%    1.2 tc(5,3)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(5,5).
+
+%    1.1 e(4,5)
+%    1.2 tc(5,4)
+%    1.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+% ====
+ tc(8,9).
+
+%    1.1 e(8,9)
+%    1.2 e(A,B)==>tc(A,B)
+
+%    2.1 e(8,9)
+%    2.2 tc(1,1)
+%    2.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    3.1 e(8,9)
+%    3.2 tc(2,2)
+%    3.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    4.1 e(8,9)
+%    4.2 tc(3,3)
+%    4.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    5.1 e(8,9)
+%    5.2 tc(4,4)
+%    5.3 tc(A,B),e(B,C)==>tc(A,C)
+
+%    6.1 e(8,9)
+%    6.2 tc(5,5)
+%    6.3 tc(A,B),e(B,C)==>tc(A,C)
+% ====
+
+
 % Rules...
- e(X,Y)==>tc(X,Y).
- tc(X,Z),e(Z,Y)==>tc(X,Y).
+ e(A,B)==>tc(A,B).
+ tc(A,B),e(B,C)==>tc(A,C).
 
 
 
@@ -959,6 +1611,17 @@ canFly ?X :- bird ?X, ~wounded ?X.
 ````
 % ===PROCESS====================
 ````
+
+WARNING/Pfc: Couldn't db_retract trigPos(e(1,_483298),rhs([tc(1,_483298)])).
+WARNING/Pfc: Couldn't db_retract tc(1,2).
+WARNING/Pfc: Couldn't db_retract trigPos(e(2,_483298),rhs([tc(2,_483298)])).
+WARNING/Pfc: Couldn't db_retract tc(2,3).
+WARNING/Pfc: Couldn't db_retract trigPos(e(3,_483298),rhs([tc(3,_483298)])).
+WARNING/Pfc: Couldn't db_retract tc(3,4).
+WARNING/Pfc: Couldn't db_retract trigPos(e(4,_483298),rhs([tc(4,_483298)])).
+WARNING/Pfc: Couldn't db_retract tc(4,5).
+WARNING/Pfc: Couldn't db_retract trigPos(e(5,_483298),rhs([tc(5,_483298)])).
+WARNING/Pfc: Couldn't db_retract tc(5,1).
 TML: bird('Coco').
 Adding (u) bird('Coco')
 TML: bird('Charlie').
@@ -966,9 +1629,10 @@ Adding (u) bird('Charlie')
 TML: wounded('Charlie').
 Adding (u) wounded('Charlie')
 TML: canFly(X):-bird(X),not(wounded(X)).
-Adding (u) bird(X),\+wounded(X)==>canFly(X)
-% ===SUCESSS====================
+Adding (u) bird(A),\+wounded(A)==>canFly(A)
 
+% ===SUCESSS====================
+Adding (g) canFly('Coco')          % WHY \+wounded('Coco'),trigNeg(wounded('Coco'),pfcBC(wounded('Coco')),rhs([canFly('Coco')])).
 
 % User added facts:
  bird('Charlie').
@@ -977,9 +1641,18 @@ Adding (u) bird(X),\+wounded(X)==>canFly(X)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ canFly('Coco').
+
+%    1.1 \+wounded('Coco')
+%    1.2 bird('Coco')
+%    1.3 bird(A),\+wounded(A)==>canFly(A)
+% ====
+
+
 % Rules...
- bird(X),\+wounded(X)==>canFly(X).
+ bird(A),\+wounded(A)==>canFly(A).
 
 
 
@@ -1017,7 +1690,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+happy,pcfUser).
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % Rules...
  sad==> \+happy.
 
@@ -1075,14 +1748,55 @@ Adding (u) e(5,1)
 TML: notdone.
 Adding (u) notdone
 TML: t(X,Y):-e(X,Y),notdone.
-Adding (u) e(X,Y),notdone==>t(X,Y)
+Adding (u) e(A,B),notdone==>t(A,B)
+Adding (g) t(1,2)          % WHY notdone,trigPos(notdone,rhs([t(1,2)])).
+Adding (g) t(2,3)          % WHY notdone,trigPos(notdone,rhs([t(2,3)])).
+Adding (g) t(3,4)          % WHY notdone,trigPos(notdone,rhs([t(3,4)])).
+Adding (g) t(4,5)          % WHY notdone,trigPos(notdone,rhs([t(4,5)])).
+Adding (g) t(5,1)          % WHY notdone,trigPos(notdone,rhs([t(5,1)])).
 TML: t(X,Z):-t(X,Y),e(Y,Z),notdone.
-Adding (u) t(X,Y),e(Y,Z),notdone==>t(X,Z)
+Adding (u) t(A,B),e(B,C),notdone==>t(A,C)
+Adding (g) t(1,3)          % WHY notdone,trigPos(notdone,rhs([t(1,3)])).
+Adding (g) t(1,4)          % WHY notdone,trigPos(notdone,rhs([t(1,4)])).
+Adding (g) t(1,5)          % WHY notdone,trigPos(notdone,rhs([t(1,5)])).
+Adding (g) t(1,1)          % WHY notdone,trigPos(notdone,rhs([t(1,1)])).
+Adding (g) t(2,4)          % WHY notdone,trigPos(notdone,rhs([t(2,4)])).
+Adding (g) t(2,5)          % WHY notdone,trigPos(notdone,rhs([t(2,5)])).
+Adding (g) t(2,1)          % WHY notdone,trigPos(notdone,rhs([t(2,1)])).
+Adding (g) t(2,2)          % WHY notdone,trigPos(notdone,rhs([t(2,2)])).
+Adding (g) t(3,5)          % WHY notdone,trigPos(notdone,rhs([t(3,5)])).
+Adding (g) t(3,1)          % WHY notdone,trigPos(notdone,rhs([t(3,1)])).
+Adding (g) t(3,2)          % WHY notdone,trigPos(notdone,rhs([t(3,2)])).
+Adding (g) t(3,3)          % WHY notdone,trigPos(notdone,rhs([t(3,3)])).
+Adding (g) t(4,1)          % WHY notdone,trigPos(notdone,rhs([t(4,1)])).
+Adding (g) t(4,2)          % WHY notdone,trigPos(notdone,rhs([t(4,2)])).
+Adding (g) t(4,3)          % WHY notdone,trigPos(notdone,rhs([t(4,3)])).
+Adding (g) t(4,4)          % WHY notdone,trigPos(notdone,rhs([t(4,4)])).
+Adding (g) t(5,2)          % WHY notdone,trigPos(notdone,rhs([t(5,2)])).
+Adding (g) t(5,3)          % WHY notdone,trigPos(notdone,rhs([t(5,3)])).
+Adding (g) t(5,4)          % WHY notdone,trigPos(notdone,rhs([t(5,4)])).
+Adding (g) t(5,5)          % WHY notdone,trigPos(notdone,rhs([t(5,5)])).
 TML: done:-notdone.
 Adding (u) notdone==>done
 Adding (g) done          % WHY notdone,trigPos(notdone,rhs([done])).
 TML: not(t(X,Y)):-e(X,Y),done.
-Adding (u) e(X,Y),done==> \+t(X,Y)
+Adding (u) e(A,B),done==> \+t(A,B)
+
+WARNING/Pfc: Couldn't db_retract spft(\+t(1,2),pcfUser,pcfUser).
+WARNING/Pfc: Couldn't db_retract support2(pcfUser,pcfUser,\+t(1,2)).
+WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+t(1,2),pcfUser).
+WARNING/Pfc: Couldn't db_retract spft(\+t(2,3),pcfUser,pcfUser).
+WARNING/Pfc: Couldn't db_retract support2(pcfUser,pcfUser,\+t(2,3)).
+WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+t(2,3),pcfUser).
+WARNING/Pfc: Couldn't db_retract spft(\+t(3,4),pcfUser,pcfUser).
+WARNING/Pfc: Couldn't db_retract support2(pcfUser,pcfUser,\+t(3,4)).
+WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+t(3,4),pcfUser).
+WARNING/Pfc: Couldn't db_retract spft(\+t(4,5),pcfUser,pcfUser).
+WARNING/Pfc: Couldn't db_retract support2(pcfUser,pcfUser,\+t(4,5)).
+WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+t(4,5),pcfUser).
+WARNING/Pfc: Couldn't db_retract spft(\+t(5,1),pcfUser,pcfUser).
+WARNING/Pfc: Couldn't db_retract support2(pcfUser,pcfUser,\+t(5,1)).
+WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+t(5,1),pcfUser).
 TML: not(notdone):-done.
 Adding (u) done==> \+notdone
 
@@ -1102,7 +1816,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+notdone,pcfUser).
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  done.
 
@@ -1110,12 +1824,592 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+notdone,pcfUser).
 %    1.2 notdone==>done
 % ====
 
+% ====
+ t(1,1).
+
+%    1.1 notdone
+%    1.2 e(5,1)
+%    1.3 t(1,5)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(1,2).
+
+%    1.1 notdone
+%    1.2 e(1,2)
+%    1.3 e(A,B),notdone==>t(A,B)
+
+%    2.1 notdone
+%    2.2 e(1,2)
+%    2.3 t(1,1)
+%    2.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    3.1 notdone
+%    3.2 e(1,2)
+%    3.3 t(2,2)
+%    3.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    4.1 notdone
+%    4.2 e(1,2)
+%    4.3 t(3,3)
+%    4.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    5.1 notdone
+%    5.2 e(1,2)
+%    5.3 t(4,4)
+%    5.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    6.1 notdone
+%    6.2 e(1,2)
+%    6.3 t(5,5)
+%    6.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    7.1 notdone
+%    7.2 e(1,2)
+%    7.3 e(A,B),notdone==>t(A,B)
+
+%    8.1 notdone
+%    8.2 e(1,2)
+%    8.3 t(1,1)
+%    8.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    9.1 notdone
+%    9.2 e(1,2)
+%    9.3 e(A,B),notdone==>t(A,B)
+
+%    10.1 notdone
+%    10.2 e(1,2)
+%    10.3 t(1,1)
+%    10.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    11.1 notdone
+%    11.2 e(1,2)
+%    11.3 t(2,2)
+%    11.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    12.1 notdone
+%    12.2 e(1,2)
+%    12.3 t(3,3)
+%    12.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    13.1 notdone
+%    13.2 e(1,2)
+%    13.3 t(4,4)
+%    13.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    14.1 notdone
+%    14.2 e(1,2)
+%    14.3 t(5,5)
+%    14.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    15.1 notdone
+%    15.2 e(1,2)
+%    15.3 e(A,B),notdone==>t(A,B)
+
+%    16.1 notdone
+%    16.2 e(1,2)
+%    16.3 t(1,1)
+%    16.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(1,3).
+
+%    1.1 notdone
+%    1.2 e(2,3)
+%    1.3 t(1,2)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(1,4).
+
+%    1.1 notdone
+%    1.2 e(3,4)
+%    1.3 t(1,3)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(1,5).
+
+%    1.1 notdone
+%    1.2 e(4,5)
+%    1.3 t(1,4)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(2,1).
+
+%    1.1 notdone
+%    1.2 e(5,1)
+%    1.3 t(2,5)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(2,2).
+
+%    1.1 notdone
+%    1.2 e(1,2)
+%    1.3 t(2,1)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(2,3).
+
+%    1.1 notdone
+%    1.2 e(2,3)
+%    1.3 e(A,B),notdone==>t(A,B)
+
+%    2.1 notdone
+%    2.2 e(2,3)
+%    2.3 t(1,1)
+%    2.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    3.1 notdone
+%    3.2 e(2,3)
+%    3.3 t(2,2)
+%    3.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    4.1 notdone
+%    4.2 e(2,3)
+%    4.3 t(3,3)
+%    4.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    5.1 notdone
+%    5.2 e(2,3)
+%    5.3 t(4,4)
+%    5.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    6.1 notdone
+%    6.2 e(2,3)
+%    6.3 t(5,5)
+%    6.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    7.1 notdone
+%    7.2 e(2,3)
+%    7.3 e(A,B),notdone==>t(A,B)
+
+%    8.1 notdone
+%    8.2 e(2,3)
+%    8.3 t(2,2)
+%    8.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    9.1 notdone
+%    9.2 e(2,3)
+%    9.3 e(A,B),notdone==>t(A,B)
+
+%    10.1 notdone
+%    10.2 e(2,3)
+%    10.3 t(1,1)
+%    10.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    11.1 notdone
+%    11.2 e(2,3)
+%    11.3 t(2,2)
+%    11.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    12.1 notdone
+%    12.2 e(2,3)
+%    12.3 t(3,3)
+%    12.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    13.1 notdone
+%    13.2 e(2,3)
+%    13.3 t(4,4)
+%    13.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    14.1 notdone
+%    14.2 e(2,3)
+%    14.3 t(5,5)
+%    14.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    15.1 notdone
+%    15.2 e(2,3)
+%    15.3 e(A,B),notdone==>t(A,B)
+
+%    16.1 notdone
+%    16.2 e(2,3)
+%    16.3 t(2,2)
+%    16.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(2,4).
+
+%    1.1 notdone
+%    1.2 e(3,4)
+%    1.3 t(2,3)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(2,5).
+
+%    1.1 notdone
+%    1.2 e(4,5)
+%    1.3 t(2,4)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(3,1).
+
+%    1.1 notdone
+%    1.2 e(5,1)
+%    1.3 t(3,5)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(3,2).
+
+%    1.1 notdone
+%    1.2 e(1,2)
+%    1.3 t(3,1)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(3,3).
+
+%    1.1 notdone
+%    1.2 e(2,3)
+%    1.3 t(3,2)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(3,4).
+
+%    1.1 notdone
+%    1.2 e(3,4)
+%    1.3 e(A,B),notdone==>t(A,B)
+
+%    2.1 notdone
+%    2.2 e(3,4)
+%    2.3 t(1,1)
+%    2.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    3.1 notdone
+%    3.2 e(3,4)
+%    3.3 t(2,2)
+%    3.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    4.1 notdone
+%    4.2 e(3,4)
+%    4.3 t(3,3)
+%    4.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    5.1 notdone
+%    5.2 e(3,4)
+%    5.3 t(4,4)
+%    5.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    6.1 notdone
+%    6.2 e(3,4)
+%    6.3 t(5,5)
+%    6.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    7.1 notdone
+%    7.2 e(3,4)
+%    7.3 e(A,B),notdone==>t(A,B)
+
+%    8.1 notdone
+%    8.2 e(3,4)
+%    8.3 t(3,3)
+%    8.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    9.1 notdone
+%    9.2 e(3,4)
+%    9.3 e(A,B),notdone==>t(A,B)
+
+%    10.1 notdone
+%    10.2 e(3,4)
+%    10.3 t(1,1)
+%    10.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    11.1 notdone
+%    11.2 e(3,4)
+%    11.3 t(2,2)
+%    11.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    12.1 notdone
+%    12.2 e(3,4)
+%    12.3 t(3,3)
+%    12.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    13.1 notdone
+%    13.2 e(3,4)
+%    13.3 t(4,4)
+%    13.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    14.1 notdone
+%    14.2 e(3,4)
+%    14.3 t(5,5)
+%    14.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    15.1 notdone
+%    15.2 e(3,4)
+%    15.3 e(A,B),notdone==>t(A,B)
+
+%    16.1 notdone
+%    16.2 e(3,4)
+%    16.3 t(3,3)
+%    16.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(3,5).
+
+%    1.1 notdone
+%    1.2 e(4,5)
+%    1.3 t(3,4)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(4,1).
+
+%    1.1 notdone
+%    1.2 e(5,1)
+%    1.3 t(4,5)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(4,2).
+
+%    1.1 notdone
+%    1.2 e(1,2)
+%    1.3 t(4,1)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(4,3).
+
+%    1.1 notdone
+%    1.2 e(2,3)
+%    1.3 t(4,2)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(4,4).
+
+%    1.1 notdone
+%    1.2 e(3,4)
+%    1.3 t(4,3)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(4,5).
+
+%    1.1 notdone
+%    1.2 e(4,5)
+%    1.3 e(A,B),notdone==>t(A,B)
+
+%    2.1 notdone
+%    2.2 e(4,5)
+%    2.3 t(1,1)
+%    2.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    3.1 notdone
+%    3.2 e(4,5)
+%    3.3 t(2,2)
+%    3.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    4.1 notdone
+%    4.2 e(4,5)
+%    4.3 t(3,3)
+%    4.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    5.1 notdone
+%    5.2 e(4,5)
+%    5.3 t(4,4)
+%    5.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    6.1 notdone
+%    6.2 e(4,5)
+%    6.3 t(5,5)
+%    6.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    7.1 notdone
+%    7.2 e(4,5)
+%    7.3 e(A,B),notdone==>t(A,B)
+
+%    8.1 notdone
+%    8.2 e(4,5)
+%    8.3 t(4,4)
+%    8.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    9.1 notdone
+%    9.2 e(4,5)
+%    9.3 e(A,B),notdone==>t(A,B)
+
+%    10.1 notdone
+%    10.2 e(4,5)
+%    10.3 t(1,1)
+%    10.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    11.1 notdone
+%    11.2 e(4,5)
+%    11.3 t(2,2)
+%    11.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    12.1 notdone
+%    12.2 e(4,5)
+%    12.3 t(3,3)
+%    12.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    13.1 notdone
+%    13.2 e(4,5)
+%    13.3 t(4,4)
+%    13.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    14.1 notdone
+%    14.2 e(4,5)
+%    14.3 t(5,5)
+%    14.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    15.1 notdone
+%    15.2 e(4,5)
+%    15.3 e(A,B),notdone==>t(A,B)
+
+%    16.1 notdone
+%    16.2 e(4,5)
+%    16.3 t(4,4)
+%    16.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(5,1).
+
+%    1.1 notdone
+%    1.2 e(5,1)
+%    1.3 e(A,B),notdone==>t(A,B)
+
+%    2.1 notdone
+%    2.2 e(5,1)
+%    2.3 t(1,1)
+%    2.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    3.1 notdone
+%    3.2 e(5,1)
+%    3.3 t(2,2)
+%    3.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    4.1 notdone
+%    4.2 e(5,1)
+%    4.3 t(3,3)
+%    4.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    5.1 notdone
+%    5.2 e(5,1)
+%    5.3 t(4,4)
+%    5.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    6.1 notdone
+%    6.2 e(5,1)
+%    6.3 t(5,5)
+%    6.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    7.1 notdone
+%    7.2 e(5,1)
+%    7.3 e(A,B),notdone==>t(A,B)
+
+%    8.1 notdone
+%    8.2 e(5,1)
+%    8.3 t(5,5)
+%    8.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    9.1 notdone
+%    9.2 e(5,1)
+%    9.3 e(A,B),notdone==>t(A,B)
+
+%    10.1 notdone
+%    10.2 e(5,1)
+%    10.3 t(1,1)
+%    10.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    11.1 notdone
+%    11.2 e(5,1)
+%    11.3 t(2,2)
+%    11.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    12.1 notdone
+%    12.2 e(5,1)
+%    12.3 t(3,3)
+%    12.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    13.1 notdone
+%    13.2 e(5,1)
+%    13.3 t(4,4)
+%    13.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    14.1 notdone
+%    14.2 e(5,1)
+%    14.3 t(5,5)
+%    14.4 t(A,B),e(B,C),notdone==>t(A,C)
+
+%    15.1 notdone
+%    15.2 e(5,1)
+%    15.3 e(A,B),notdone==>t(A,B)
+
+%    16.1 notdone
+%    16.2 e(5,1)
+%    16.3 t(5,5)
+%    16.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(5,2).
+
+%    1.1 notdone
+%    1.2 e(1,2)
+%    1.3 t(5,1)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(5,3).
+
+%    1.1 notdone
+%    1.2 e(2,3)
+%    1.3 t(5,2)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(5,4).
+
+%    1.1 notdone
+%    1.2 e(3,4)
+%    1.3 t(5,3)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
+% ====
+ t(5,5).
+
+%    1.1 notdone
+%    1.2 e(4,5)
+%    1.3 t(5,4)
+%    1.4 t(A,B),e(B,C),notdone==>t(A,C)
+% ====
+
 
 % Rules...
- e(X,Y),notdone==>t(X,Y).
- t(X,Y),e(Y,Z),notdone==>t(X,Z).
+ e(A,B),notdone==>t(A,B).
+ t(A,B),e(B,C),notdone==>t(A,C).
  notdone==>done.
- e(X,Y),done==> \+t(X,Y).
+ e(A,B),done==> \+t(A,B).
  done==> \+notdone.
 
 
@@ -1145,6 +2439,22 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y.
 ````
 % ===PROCESS====================
 ````
+
+WARNING/Pfc: Couldn't db_retract trigPos(e(1,_569390),trigPos(notdone,rhs([t(1,_569390)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(1,2)])).
+WARNING/Pfc: Couldn't db_retract t(1,2).
+WARNING/Pfc: Couldn't db_retract trigPos(e(2,_569390),trigPos(notdone,rhs([t(2,_569390)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(2,3)])).
+WARNING/Pfc: Couldn't db_retract t(2,3).
+WARNING/Pfc: Couldn't db_retract trigPos(e(3,_569390),trigPos(notdone,rhs([t(3,_569390)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(3,4)])).
+WARNING/Pfc: Couldn't db_retract t(3,4).
+WARNING/Pfc: Couldn't db_retract trigPos(e(4,_569390),trigPos(notdone,rhs([t(4,_569390)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(4,5)])).
+WARNING/Pfc: Couldn't db_retract t(4,5).
+WARNING/Pfc: Couldn't db_retract trigPos(e(5,_569390),trigPos(notdone,rhs([t(5,_569390)]))).
+WARNING/Pfc: Couldn't db_retract trigPos(notdone,rhs([t(5,1)])).
+WARNING/Pfc: Couldn't db_retract t(5,1).
 TML: father('Tom','Amy').
 Adding (u) father('Tom','Amy')
 TML: father('Jack','Fred').
@@ -1162,15 +2472,39 @@ Adding (u) mother('CarolI','CarolII')
 TML: mother('CarolII','CarolIII').
 Adding (u) mother('CarolII','CarolIII')
 TML: parent(X,Y):-father(X,Y).
-Adding (u) father(X,Y)==>parent(X,Y)
+Adding (u) father(A,B)==>parent(A,B)
+Adding (g) parent('Tom','Amy')          % WHY father('Tom','Amy'),trigPos(father(A,B),rhs([parent(A,B)])).
+Adding (g) parent('Jack','Fred')          % WHY father('Jack','Fred'),trigPos(father(A,B),rhs([parent(A,B)])).
+Adding (g) parent('Tony','CarolII')          % WHY father('Tony','CarolII'),trigPos(father(A,B),rhs([parent(A,B)])).
+Adding (g) parent('Fred','CarolIII')          % WHY father('Fred','CarolIII'),trigPos(father(A,B),rhs([parent(A,B)])).
 TML: parent(X,Y):-mother(X,Y).
-Adding (u) mother(X,Y)==>parent(X,Y)
+Adding (u) mother(A,B)==>parent(A,B)
+Adding (g) parent('Grace','Amy')          % WHY mother('Grace','Amy'),trigPos(mother(A,B),rhs([parent(A,B)])).
+Adding (g) parent('Amy','Fred')          % WHY mother('Amy','Fred'),trigPos(mother(A,B),rhs([parent(A,B)])).
+Adding (g) parent('CarolI','CarolII')          % WHY mother('CarolI','CarolII'),trigPos(mother(A,B),rhs([parent(A,B)])).
+Adding (g) parent('CarolII','CarolIII')          % WHY mother('CarolII','CarolIII'),trigPos(mother(A,B),rhs([parent(A,B)])).
 TML: ancestor(X,Y):-parent(X,Y).
-Adding (u) parent(X,Y)==>ancestor(X,Y)
+Adding (u) parent(A,B)==>ancestor(A,B)
+Adding (g) ancestor('Tom','Amy')          % WHY parent('Tom','Amy'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Jack','Fred')          % WHY parent('Jack','Fred'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Tony','CarolII')          % WHY parent('Tony','CarolII'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Fred','CarolIII')          % WHY parent('Fred','CarolIII'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Grace','Amy')          % WHY parent('Grace','Amy'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('Amy','Fred')          % WHY parent('Amy','Fred'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('CarolI','CarolII')          % WHY parent('CarolI','CarolII'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
+Adding (g) ancestor('CarolII','CarolIII')          % WHY parent('CarolII','CarolIII'),trigPos(parent(A,B),rhs([ancestor(A,B)])).
 TML: ancestor(X,Y):-parent(X,Z),ancestor(Z,Y).
-Adding (u) parent(X,Z),ancestor(Z,Y)==>ancestor(X,Y)
-% ===SUCESSS====================
+Adding (u) parent(A,B),ancestor(B,C)==>ancestor(A,C)
+Adding (g) ancestor('Tom','Fred')          % WHY ancestor('Amy','Fred'),trigPos(ancestor('Amy',A),rhs([ancestor('Tom',A)])).
+Adding (g) ancestor('Jack','CarolIII')          % WHY ancestor('Fred','CarolIII'),trigPos(ancestor('Fred',A),rhs([ancestor('Jack',A)])).
+Adding (g) ancestor('Tony','CarolIII')          % WHY ancestor('CarolII','CarolIII'),trigPos(ancestor('CarolII',A),rhs([ancestor('Tony',A)])).
+Adding (g) ancestor('Grace','Fred')          % WHY ancestor('Amy','Fred'),trigPos(ancestor('Amy',A),rhs([ancestor('Grace',A)])).
+Adding (g) ancestor('Amy','CarolIII')          % WHY ancestor('Fred','CarolIII'),trigPos(ancestor('Fred',A),rhs([ancestor('Amy',A)])).
+Adding (g) ancestor('Tom','CarolIII')          % WHY ancestor('Amy','CarolIII'),trigPos(ancestor('Amy','CarolIII'),rhs([ancestor('Tom','CarolIII')])).
+Adding (g) ancestor('Grace','CarolIII')          % WHY ancestor('Amy','CarolIII'),trigPos(ancestor('Amy','CarolIII'),rhs([ancestor('Grace','CarolIII')])).
 
+% ===SUCESSS====================
+Adding (g) ancestor('CarolI','CarolIII')          % WHY ancestor('CarolII','CarolIII'),trigPos(ancestor('CarolII',A),rhs([ancestor('CarolI',A)])).
 
 % User added facts:
  father('Fred','CarolIII').
@@ -1184,12 +2518,189 @@ Adding (u) parent(X,Z),ancestor(Z,Y)==>ancestor(X,Y)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ ancestor('Amy','CarolIII').
+
+%    1.1 ancestor('Fred','CarolIII')
+%    1.2 parent('Amy','Fred')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Amy','Fred').
+
+%    1.1 parent('Amy','Fred')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('CarolI','CarolII').
+
+%    1.1 parent('CarolI','CarolII')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('CarolI','CarolIII').
+
+%    1.1 ancestor('CarolII','CarolIII')
+%    1.2 parent('CarolI','CarolII')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('CarolII','CarolIII').
+
+%    1.1 parent('CarolII','CarolIII')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Fred','CarolIII').
+
+%    1.1 parent('Fred','CarolIII')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Grace','Amy').
+
+%    1.1 parent('Grace','Amy')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Grace','CarolIII').
+
+%    1.1 ancestor('Amy','CarolIII')
+%    1.2 parent('Grace','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Grace','Fred').
+
+%    1.1 ancestor('Amy','Fred')
+%    1.2 parent('Grace','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Jack','CarolIII').
+
+%    1.1 ancestor('Fred','CarolIII')
+%    1.2 parent('Jack','Fred')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Jack','Fred').
+
+%    1.1 parent('Jack','Fred')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Tom','Amy').
+
+%    1.1 parent('Tom','Amy')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Tom','CarolIII').
+
+%    1.1 ancestor('Amy','CarolIII')
+%    1.2 parent('Tom','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Tom','Fred').
+
+%    1.1 ancestor('Amy','Fred')
+%    1.2 parent('Tom','Amy')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ ancestor('Tony','CarolII').
+
+%    1.1 parent('Tony','CarolII')
+%    1.2 parent(A,B)==>ancestor(A,B)
+% ====
+
+% ====
+ ancestor('Tony','CarolIII').
+
+%    1.1 ancestor('CarolII','CarolIII')
+%    1.2 parent('Tony','CarolII')
+%    1.3 parent(A,B),ancestor(B,C)==>ancestor(A,C)
+% ====
+
+% ====
+ parent('Amy','Fred').
+
+%    1.1 mother('Amy','Fred')
+%    1.2 mother(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('CarolI','CarolII').
+
+%    1.1 mother('CarolI','CarolII')
+%    1.2 mother(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('CarolII','CarolIII').
+
+%    1.1 mother('CarolII','CarolIII')
+%    1.2 mother(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('Fred','CarolIII').
+
+%    1.1 father('Fred','CarolIII')
+%    1.2 father(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('Grace','Amy').
+
+%    1.1 mother('Grace','Amy')
+%    1.2 mother(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('Jack','Fred').
+
+%    1.1 father('Jack','Fred')
+%    1.2 father(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('Tom','Amy').
+
+%    1.1 father('Tom','Amy')
+%    1.2 father(A,B)==>parent(A,B)
+% ====
+
+% ====
+ parent('Tony','CarolII').
+
+%    1.1 father('Tony','CarolII')
+%    1.2 father(A,B)==>parent(A,B)
+% ====
+
+
 % Rules...
- father(X,Y)==>parent(X,Y).
- mother(X,Y)==>parent(X,Y).
- parent(X,Y)==>ancestor(X,Y).
- parent(X,Z),ancestor(Z,Y)==>ancestor(X,Y).
+ father(A,B)==>parent(A,B).
+ mother(A,B)==>parent(A,B).
+ parent(A,B)==>ancestor(A,B).
+ parent(A,B),ancestor(B,C)==>ancestor(A,C).
 
 
 
@@ -1238,21 +2749,29 @@ Adding (u) human('John')
 TML: human('Jane').
 Adding (u) human('Jane')
 TML: being(X):-bird(X).
-Adding (u) bird(X)==>being(X)
+Adding (u) bird(A)==>being(A)
+Adding (g) being('Charlie')          % WHY bird('Charlie'),trigPos(bird(A),rhs([being(A)])).
+Adding (g) being('Coco')          % WHY bird('Coco'),trigPos(bird(A),rhs([being(A)])).
 TML: being(X):-human(X).
-Adding (u) human(X)==>being(X)
+Adding (u) human(A)==>being(A)
+Adding (g) being('John')          % WHY human('John'),trigPos(human(A),rhs([being(A)])).
+Adding (g) being('Jane')          % WHY human('Jane'),trigPos(human(A),rhs([being(A)])).
 TML: mortal(X):-being(X).
-Adding (u) being(X)==>mortal(X)
+Adding (u) being(A)==>mortal(A)
+Adding (g) mortal('Charlie')          % WHY being('Charlie'),trigPos(being(A),rhs([mortal(A)])).
+Adding (g) mortal('Coco')          % WHY being('Coco'),trigPos(being(A),rhs([mortal(A)])).
+Adding (g) mortal('John')          % WHY being('John'),trigPos(being(A),rhs([mortal(A)])).
+Adding (g) mortal('Jane')          % WHY being('Jane'),trigPos(being(A),rhs([mortal(A)])).
 TML: dead(X):-mortal(X),armageddon.
-Adding (u) mortal(X),armageddon==>dead(X)
+Adding (u) mortal(A),armageddon==>dead(A)
 TML: not(bird(X)):-dead(X).
-Adding (u) dead(X)==> \+bird(X)
+Adding (u) dead(A)==> \+bird(A)
 TML: not(human(X)):-dead(X).
-Adding (u) dead(X)==> \+human(X)
+Adding (u) dead(A)==> \+human(A)
 TML: not(mortal(X)):-dead(X).
-Adding (u) dead(X)==> \+mortal(X)
+Adding (u) dead(A)==> \+mortal(A)
 TML: not(being(X)):-dead(X).
-Adding (u) dead(X)==> \+being(X)
+Adding (u) dead(A)==> \+being(A)
 % ===SUCESSS====================
 
 
@@ -1264,16 +2783,73 @@ Adding (u) dead(X)==> \+being(X)
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
+% ====
+ being('Charlie').
+
+%    1.1 bird('Charlie')
+%    1.2 bird(A)==>being(A)
+% ====
+
+% ====
+ being('Coco').
+
+%    1.1 bird('Coco')
+%    1.2 bird(A)==>being(A)
+% ====
+
+% ====
+ being('Jane').
+
+%    1.1 human('Jane')
+%    1.2 human(A)==>being(A)
+% ====
+
+% ====
+ being('John').
+
+%    1.1 human('John')
+%    1.2 human(A)==>being(A)
+% ====
+
+% ====
+ mortal('Charlie').
+
+%    1.1 being('Charlie')
+%    1.2 being(A)==>mortal(A)
+% ====
+
+% ====
+ mortal('Coco').
+
+%    1.1 being('Coco')
+%    1.2 being(A)==>mortal(A)
+% ====
+
+% ====
+ mortal('Jane').
+
+%    1.1 being('Jane')
+%    1.2 being(A)==>mortal(A)
+% ====
+
+% ====
+ mortal('John').
+
+%    1.1 being('John')
+%    1.2 being(A)==>mortal(A)
+% ====
+
+
 % Rules...
- bird(X)==>being(X).
- human(X)==>being(X).
- being(X)==>mortal(X).
- mortal(X),armageddon==>dead(X).
- dead(X)==> \+bird(X).
- dead(X)==> \+human(X).
- dead(X)==> \+mortal(X).
- dead(X)==> \+being(X).
+ bird(A)==>being(A).
+ human(A)==>being(A).
+ being(A)==>mortal(A).
+ mortal(A),armageddon==>dead(A).
+ dead(A)==> \+bird(A).
+ dead(A)==> \+human(A).
+ dead(A)==> \+mortal(A).
+ dead(A)==> \+being(A).
 
 
 
@@ -1335,7 +2911,7 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+stop,pcfUser).
 
 
 
-% Pfc added facts:
+% LogicMOO infered facts:
 % ====
  running.
 
@@ -1364,8 +2940,8 @@ WARNING/Pfc: Couldn't db_retract support3(pcfUser,\+stop,pcfUser).
 ````
 % init_why(after('/opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain/tml_interp.pl')).
 % init_why(program).
-?-
-|    ^D
+?- ^D
 % halt
 (base) root@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/prolog/tauchain#
+
 

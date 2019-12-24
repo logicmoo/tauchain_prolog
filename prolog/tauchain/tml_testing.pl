@@ -1,34 +1,4 @@
 
-
-run_tml(String):-
- into_codes_list(String, Chars),
- parse_tml(Chars, ExprsVs),
- pfcReset,
- show_tml_read_and_do(ExprsVs),!,
- dmsg("===SUCESSS===================="),!,
- pfcPrintDB.
-
-run_tml(_):- 
- dmsg(failed("===FAILED====================")),!.
-
-show_tml_read_and_do(ExprsVs):- is_list(ExprsVs),!,maplist(show_tml_read_and_do,ExprsVs).
-show_tml_read_and_do(ExprsVs):- show_tml_read(ExprsVs),show_tml_do(ExprsVs).
-
-show_tml_do(H:-B):- !,ain(B==>H).
-show_tml_do(H):- ain(H).
-
-check_tml_sample(Name:Data):-
-  text_to_string(Data,SData),
-  assert(tml_sample_name_data(Name,SData)),
-  upcase_atom(Name,UNAME),
-  format("~N~n`====== TEST: ~w ===========`~n```", UNAME),
-   format('~N~s~n',SData),
-   writeln('````'),
-   dmsg("===PROCESS===================="),
-   writeln('````'),
-   run_tml(SData),
-   writeln('````'),!.
-
       
 % :- set_prolog_flag(back_quotes,string).
 
@@ -572,12 +542,6 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
        ~e ?x ?x :- e ?x ?x.
 }
 ").
-
-
-
-
-:- tml_examples(List), 
-   maplist(check_tml_sample,List).
 
 
 

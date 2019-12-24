@@ -1371,7 +1371,7 @@ pfcPrintFacts(P,C) :-
   pfcClassifyFacts(L,User,Pfc,_Rule),
   format("~n~n% User added facts:",[]),
   pfcPrintitems(User),
-  format("~n~n% Pfc added facts:",[]),
+  format("~n~n% LogicMOO infered facts:",[]),
   pfcPrintitemsWhy(Pfc).
 
 
