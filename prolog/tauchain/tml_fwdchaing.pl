@@ -183,13 +183,13 @@ ain(P,S) :-
 %ain(_,_).
 ain(P,S) :- mpred_warn("ain(~p,~p) failed",[P,S]).
 
-ain_test(X):-  
+ain_test(X):- 
    ain(X),   
    pfcRun,
    flush_output,
    dmsg(""),
-   pfcPrintDB,
-   break.
+   pfcPrintDB.
+   
 
 rewrite_necks(P,PO):- \+ compound(P),!,P=PO.
 rewrite_necks(P,PO):- is_list(P),!,maplist(rewrite_necks,P,PO).
@@ -201,7 +201,7 @@ rewrite_necks(P,PO):-
 bh_neck('->').
 bh_neck('=>').
 bh_neck('==>').
-rewrite_functor(not,(\+)).
+rewrite_functor('not',( \+ )).
 rewrite_functor(F,F).
 rewrite_compound((:-),[H,B],PO):-
   mpred_settings(neck,NewNeck),!,
@@ -1360,7 +1360,7 @@ pfcPrintDB_Full :-
    pfcPrintSupports,
    mpred_queue]).
 
-%% pfcPrintFacts ..
+%% pfcPrintFacts ..    
 
 pfcPrintFacts :- pfcPrintFacts(_,true).
 
@@ -1843,7 +1843,8 @@ mpred_selectJustificationNode(Js,Index,Step) :-
   nth(StepNo,Justification,Step).
 
 :- mpred_trace.
- :-
+
+:-
   ain_test([
 	(j(X), k(Y) ==> bothJK(X,Y)),
 	(bothJK(X,Y), go ==> jkGo(X,Y)),
@@ -1853,7 +1854,6 @@ mpred_selectJustificationNode(Js,Index,Step) :-
         {pfcShowWhy(bothJK(1,2))}        
        ]).
 
-:- prolog.
 
 :- mpred_trace.
 :- 
