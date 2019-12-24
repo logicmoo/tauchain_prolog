@@ -1,4 +1,33 @@
 
+
+run_tml(String):-
+ into_codes_list(String, Chars),
+ parse_tml(Chars, ExprsVs),
+ show_tml_read(ExprsVs),!,
+ dmsg("===SUCESSS===================="),!.
+run_tml(_):- 
+ dmsg(failed("===FAILED====================")),!.
+
+
+
+check_tml_sample(Name:Data):-
+  text_to_string(Data,SData),
+  assert(tml_sample_name_data(Name,SData)),
+  upcase_atom(Name,UNAME),
+  format("~N~n`====== TEST: ~w ===========`~n```", UNAME),
+   format('~N~s~n',SData),
+   writeln('````'),
+   dmsg("===PROCESS===================="),
+   writeln('````'),
+   run_tml(SData),
+   writeln('````'),!.
+
+
+
+:- tml_examples(List), 
+   maplist(check_tml_sample,List).
+
+
 % :- set_prolog_flag(back_quotes,string).
 
 
