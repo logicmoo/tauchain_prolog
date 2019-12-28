@@ -567,8 +567,8 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
 
 % :- pfcWatch.
 :- tml_examples([_|List]), 
-   reverse(List,RList),
-   maplist(ain_test,RList).
+   %%reverse(List,RList),
+   maplist(ain_test,List).
 /*
 
 :- mpred_trace.
