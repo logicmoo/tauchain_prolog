@@ -1,7 +1,7 @@
+:- module(tml_testing,[tml_examples/1,test_tml_r/1,show_tml_read/1]).
 
-      
+
 % :- set_prolog_flag(back_quotes,string).
-
 
 tml_examples([
 	intro:
@@ -441,12 +441,30 @@ stop :- running.
 ~running :- stop.
 start :- stop.
 ~stop :- start.
-`
+`,
+	unsat2:
+`# Following program does 6 steps and returns
+# to the state where it initially started.
+#
+# TML has to stop and outputs: unsat
+#
+# Not stopping would cause an infinite loop
+
+start.
+running :- start.
+~start :- running. `
 ]).
 
 
+:- current_prolog_flag(os_argv,_).
+
+:- ensure_loaded(tml_interp).
+
+:- writeln('# READER TESTS').
+:- writeln('````').
 
 %:- if((current_prolog_flag(os_argv,X),member('tml_reader.pl',X))).
+
 
 :- test_tml_r("  
 e(1 2).
@@ -542,8 +560,45 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
        ~e ?x ?x :- e ?x ?x.
 }
 ").
+:- writeln('````').
+
+%:- break.
+%:- cls.
+
+% :- pfcWatch.
+:- tml_examples([_|List]), 
+   reverse(List,RList),
+   maplist(ain_test,RList).
+/*
+
+:- mpred_trace.
+
+:-
+  ain_test([
+	(j(X), k(Y) ==> bothJK(X,Y)),
+	(bothJK(X,Y), go ==> jkGo(X,Y)),
+	j(1),
+	go,
+	k(2),
+        {pfcShowWhy(bothJK(1,2))}        
+       ]).
 
 
+:- mpred_trace.
+:- 
+    ain_test([(faz(X), ~baz(Y)/{X=:=Y} ==> fazbaz(X)),
+         (fazbaz(X), go ==> found(X)),
+	 (found(X), {X>=100} ==> big(X)),
+	 (found(X), {X>=10,X<100} ==> medium(X)),
+	 (found(X), {X<10} ==> little(X)),
+	 faz(1),
+	 goAhead,
+	 baz(2),
+	 baz(1)
+	]).
+
+:- mpred_trace.
+*/
 
 % :- endif.
 

@@ -1,6 +1,115 @@
-% :- module(tml_reader,[parse_tml/2,test_tml_r/1,show_tml_read/1]).
+:- module(tml_reader,[parse_tml/2,test_tml_r/1,tml_unnumbervars/2,tml_to_pfc/2,pfc_to_tml/2,into_codes_list_s/2,codes_list/1,chars_list/1,into_char_list_s/2,show_tml_read/1]).
 
 :- use_module(library(logicmoo_common)).
+
+
+
+:- op(500,fx,'~').
+:- op(1050,xfx,('==>')).
+:- op(1050,xfx,'<==>').
+:- op(1050,xfx,('<-')).
+:- op(1100,fx,('==>')).
+:- op(1150,xfx,('::::')).
+
+
+
+
+:- dynamic user:portray/1.
+:- multifile user:portray/1.
+:- module_transparent user:portray/1.
+user:portray(Logic) :- 
+ \+ tracing, 
+ fail,  
+ compound(Logic), 
+ tml_current_portray_level(Level),
+ tml_portray_at_level(Level, Logic),!.
+
+tml_portray_at_level(Level,Logic):- 
+ Level<2,
+ tml_pretty_printer(Logic).
+
+:- format_predicate('M', format_tml(_Arg,_TML)).
+
+
+
+:- use_module(library(logicmoo/portray_vars)).
+
+:- flag(tml_pretty_printer,_,0).
+tml_current_portray_level(Level) :- flag(tml_pretty_printer,Was,Was),Was=Level.
+:- export(tml_current_portray_level/1).
+%tml_pretty_printer(Term):- !, fmt90(Term).
+tml_pretty_printer(Term):- compound(Term),
+ \+ \+ setup_call_cleanup( flag(tml_pretty_printer,Was,Was+1),
+                     \+ \+ tml_prolog_pretty_print(Term),
+                     flag(tml_pretty_printer,_,Was)),!.
+tml_pretty_printer(Var):- var(Var),!,format(current_output,'?~p',Var).
+tml_pretty_printer(Term):- format('~p',[Term]).
+%tml_pretty_printer(Term):- fmt90(Term).
+
+format_tml(_Format, Var):- var(Var),!,format(current_output,'?~w',Var).
+format_tml(_Arg, TML):- string(TML),!,format(current_output,'"~s"',TML).
+format_tml(_Arg, TML):- codes_list(TML),!,format(current_output,'~s',TML).
+format_tml(_Arg, TML):- chars_list(TML),!,format(current_output,'~s',TML).
+format_tml(Arg, List):- is_list(List),!,maplist([E]>>(format_tml(Arg,E),format('~N',[])), List).
+format_tml(_Arg, TML):- pfc_to_tml(TML,RTML),!,tml_portray_at_level(0,RTML),format('.~N',[]).
+
+tml_prolog_pretty_print(Term):- 
+  pretty_numbervars(Term,Term2),
+  prolog_pretty_print:print_term(Term2, [ output(current_output)]).
+
+print_tml(X):- format_tml('~M', X).
+
+
+tml_to_pfc(ExprsVs,Exprs):-
+  unnumbervars(ExprsVs,ExprsU),
+  copy_term(ExprsU,ExprsNA,_),!,
+  rewrite_necks(tml(h),pfc(h),ExprsNA,Exprs),!.
+
+pfc_to_tml(ExprsVs,Exprs):-
+  unnumbervars(ExprsVs,ExprsU),
+  copy_term(ExprsU,ExprsNA,_),!,
+  rewrite_necks(pfc(h),tml(h),ExprsNA,Exprs),!.
+
+
+rewrite_necks(_FromL,_Lang,P,PO):- \+ compound(P),!,P=PO.
+rewrite_necks(FromL,Lang,==>P,PO):- !, rewrite_necks(FromL,Lang,P,PO).
+rewrite_necks(FromL,Lang,P,PO):- is_list(P),!,maplist(rewrite_necks(FromL,Lang),P,PO).
+rewrite_necks(FromL,Lang,P,PO):- compound_name_arguments(P,N,A),
+  must_or_rtrace(rewrite_compound(FromL,Lang,N,A,PO)).
+
+bh_neck('->').
+bh_neck('=>').
+bh_neck('==>').
+rewrite_functor(_FromL,pfc(_),(not),( \+ )).
+rewrite_functor(_FromL,tml(_),(\+),(~)).
+rewrite_functor(tml(_),NTML, (:-), ('==>')):- NTML \= tml(_), !.
+rewrite_functor(FromL,To,From,To):- clause(rewrite_functor(To,FromL,To,From),Body), Body \= (clause(_,_),_), Body,!.
+rewrite_functor(_FromL,_Lang,F,F).
+
+rewrite_compound(FromL,tml(_),(==>),[B,H],(HH:-BB)):-
+    rewrite_necks(FromL,tml(_),H,HH),
+    rewrite_necks(FromL,tml(_),B,BB),!.
+
+rewrite_compound(FromL,Lang,N,[H,B],PO):-
+  (rewrite_functor(FromL,Lang,N,NO)-> N\=@=NO),
+  ((bh_neck(N) -> \+ bh_neck(NO) ; bh_neck(NO)) -> 
+     ARGS = [B,H] ; ARGS = [H,B]),
+   maplist(rewrite_necks(FromL,Lang),ARGS,AO),
+   compound_name_arguments(PO,NO,AO),!.
+
+rewrite_compound(FromL,Lang,N,A,PO):-
+  rewrite_functor(FromL,Lang,N,NO),
+   maplist(rewrite_necks(FromL,Lang),A,AO),
+   compound_name_arguments(PO,NO,AO),!.
+
+
+tml_unnumbervars(ExprsVs,ExprsNA):-
+  unnumbervars(ExprsVs,Exprs),
+  copy_term(Exprs,ExprsNA,_),!.
+
+
+
+
 
 
 always(G):- G*->true;throw(not_always(G)).
@@ -13,14 +122,28 @@ optional(X) --> X ; null.
 some(P) --> (P, optional(some(P))),!.
 peek(X,H,H):-phrase(X,H,_).
 npeek(X,H,H):- \+ phrase(X,H,_).
+
+% "c8d12a1cca95"
            
-into_codes_list(String, Chars):- current_prolog_flag(back_quotes, chars),!,
-   into_codes_list_s(String, Codes), atom_codes(Atom,Codes),atom_chars(Atom,Chars).
+into_codes_list(String, Chars):- current_prolog_flag(back_quotes, chars),!,into_char_list_s(String,Chars).
 into_codes_list(String, Codes):- into_codes_list_s(String, Codes).
 
-into_codes_list_s(String, Codes) :- \+ is_list(String),!, atom_codes(String,Codes).
-into_codes_list_s([S|String], Codes) :- \+ integer(S),!,atom_chars(Atom,[S|String]),atom_codes(Atom,Codes).
-into_codes_list_s(Codes, Codes).
+into_char_list_s(String,Chars):- into_codes_list_s(String, Codes), atom_codes(Atom,Codes),atom_chars(Atom,Chars).
+
+
+codes_list([S|String]):- is_char_code(S),maplist(is_char_code,String),!.
+chars_list([S|String]):- is_char(S),maplist(is_char,String).
+is_char(S):- atom(S),atom_length(S,1).
+is_char_code(S):- integer(S),S>0,code_type(S,_),!.
+
+
+into_codes_list_s(X, Codes) :- var(X), !,throw(var_into_codes_list_s(X, Codes)).
+into_codes_list_s(X, Codes) :- X ==[], !,atom_codes('\n', Codes).
+into_codes_list_s(String, Codes) :- atomic(String),!, atom_codes(String,Codes).
+into_codes_list_s(String, Codes) :- \+ is_list(String),!, sformat(Codes,'~M',[String]),!.
+into_codes_list_s(String, Codes) :- codes_list(String),!,Codes=String.
+into_codes_list_s(String, Codes) :- chars_list(String),!,atom_chars(Atom,String),atom_codes(Atom,Codes).
+into_codes_list_s(String, Codes) :- sformat(Codes,'~M',[String]),!.
 
 parse_tml(String, ExprsVs) :- 
   parse_tml(file_lineS, String, ExprsVs).
@@ -102,7 +225,7 @@ pred_expr(Pred)    --> single_arg_np(X),item(infix(Cs)),!,single_arg_np(Y), {uni
 pred_expr(Pred)    --> symbol(Cs),`(`, quietly(arg_list(wst,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs),`(`, !, quietly(arg_list(wstc,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs), wst, arg_list(wst,List), {List\==[]}, {univ_holds(Pred,[Cs|List])}.
-pred_expr(not(A))  --> item(`~`),!,pred_expr(A).
+pred_expr('@naf'(A))  --> item(`~`),!,pred_expr(A).
 pred_expr(A)       --> symbol(A).
 
 infix(Cs) --> {infix_op(Cs),atom_codes(Cs,Codes)},Codes,!.
@@ -181,7 +304,7 @@ test_tml_r(X):- parsing_error(X,Codes),show_tml_read(Codes),!.
 test_tml_r(Pred, X):- parse_tml(Pred, X,Codes),show_tml_read(Codes),!.
 
 show_tml_read(X):- is_list(X),!, maplist(show_tml_read,X).
-show_tml_read(X):- format('~NTML: ~q.~n',X).
+show_tml_read(X):- format('~NTML: ',X),format_tml(_Arg, X).
 
 %:- [qvar_rewriter].
 

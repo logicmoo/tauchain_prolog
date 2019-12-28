@@ -8,7 +8,9 @@
 
 */
 
-:- module(foofy_bot,[go/0,wave/0]).
+:- module(tml_ircbot,[go/0,wave/0]).
+
+:- ensure_loaded(tml_interp).
 
 :- use_module(library(eggdrop)).
 

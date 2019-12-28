@@ -11,6 +11,8 @@
 %:- dynamic(not/1).
 not(P):- \+ P.
 
+logm(G):- nop(call(G)).
+idni(G):- call(G).
 
 %:- kill_term_expansion.
 %:- include(prologmud(mud_header)).
@@ -42,17 +44,20 @@ db_assertz(X):-invoke_modify(assert(z),X).
 db_asserta(X):-old_assert,!,asserta(X).
 db_asserta(X):-invoke_modify(assert(a),X).
 db_assert(X):-old_assert,!,assert(X).
-db_assert(X):-invoke_modify(assert(z),X).
+db_assert(X):-invoke_modify(assert(z_if_new),X).
+db_assert_if_new(X):-invoke_modify(assert(z_if_new),X).
+%db_assert(X):-invoke_modify(assert(z),X).
 
-db_clause(X,Y,Ref):-old_clausedb,!,clause(X,Y,Ref).
-db_clause(X,Y,Ref):-invoke_check(clause(_),clause_asserted(X,Y,Ref)).
-db_clause(X,Y):-old_clausedb,!,clause(X,Y).
-db_clause(X,Y):-invoke_check(clause(_),clause_asserted(X,Y)).
+db_clause(HB):- extact_hb(HB,H,B),!,db_clause(H,B).
+db_clause(H,B,Ref):-old_clausedb,!,clause(H,B,Ref).
+db_clause(H,B,Ref):-invoke_check(clause(_),clause_asserted(H,B,Ref)).
+db_clause(H,B):-old_clausedb,!,clause(H,B).
+db_clause(H,B):-invoke_check(clause(_),clause_asserted(H,B)).
 
 
-db_call(Y):-db_call(nonPfc,Y).
-db_call(_,Y):-old_call,!,predicate_property(Y,_),!, call(Y).
-db_call(What,X):-invoke_call(call(What),X).
+db_call(G):-db_call(nonPfc,G).
+db_call(_,G):-old_call,!,predicate_property(G,_),!, call(G).
+db_call(What,G):-invoke_call(call(What),G).
 
 
 rem(X):-pfcRem(X).
@@ -62,14 +67,15 @@ bagof_or_nil(T,G,B):- bagof(T,G,B)*->true;B=[].
 setof_or_nil(T,G,B):- setof(T,G,B)*->true;B=[].
 
 invoke_call(_,      B ):- var(B),!,fail.
+invoke_call(A,  '@neg'(B)):- !, not(invoke_call(A,B)).
 invoke_call(A,  not(B)):- !, not(invoke_call(A,B)).
 invoke_call(A,   \+(B)):- !, \+ invoke_call(A,B).
 invoke_call(A, call(B)):- !, invoke_call(A,B).
-invoke_call(_A,     B ):- current_predicate(_,B),!,call(B).
-invoke_call(A,      B ):- invoke_op0(A,B).
+invoke_call(A,     B ):- current_predicate(_,B),!,dmsg(invoke_callp(A,B)),call(B).
+invoke_call(A,     B ):- dmsg(invoke_call(A,B)),invoke_op0(A,B).
 
-invoke_modify(A,B):-(invoke_op0(A,B)).
-invoke_check(A,B):-(invoke_op0(A,B)).
+invoke_modify(A,B):- nop(dmsg(invoke_modify(A,B))),invoke_op0(A,B).
+invoke_check(A,B):- nop(dmsg(invoke_check(A,B))),invoke_op0(A,B).
 
 
 
@@ -78,8 +84,9 @@ invoke_op0(assert(a),X):- bugger_assert,!,ain(X).
 invoke_op0(assert(_),X):- bugger_assert,!,ain(X).
 invoke_op0(assert(z),X):-!,assertz(X).
 invoke_op0(assert(a),X):-!,asserta(X).
+invoke_op0(assert(z_if_new),X):-!,assertz_if_new(X).
 invoke_op0(assert(_),X):-!,assert(X).
-invoke_op0(retract(all),X):-!,retractall(X).
+invoke_op0(retract(all),X):-!,retractall(X),must(\+X).
 invoke_op0(retract(_),X):-!,retract(X).
 invoke_op0(clause(_),(X)):-clause(X,true).
 invoke_op0(clause(_),clause_asserted(X,Y)):-!,clause(X,Y).
@@ -183,45 +190,15 @@ ain(P,S) :-
 %ain(_,_).
 ain(P,S) :- mpred_warn("ain(~p,~p) failed",[P,S]).
 
-ain_test(X):- 
-   ain(X),   
-   pfcRun,
-   flush_output,
-   dmsg(""),
-   pfcPrintDB.
-   
-
-rewrite_necks(P,PO):- \+ compound(P),!,P=PO.
-rewrite_necks(P,PO):- is_list(P),!,maplist(rewrite_necks,P,PO).
-rewrite_necks(==>P,PO):- !, rewrite_necks(P,PO).
-rewrite_necks(P,PO):- 
-  compound_name_arguments(P,N,A),
-  rewrite_compound(N,A,PO).
-
-bh_neck('->').
-bh_neck('=>').
-bh_neck('==>').
-rewrite_functor('not',( \+ )).
-rewrite_functor(F,F).
-rewrite_compound((:-),[H,B],PO):-
-  mpred_settings(neck,NewNeck),!,
-  (bh_neck(NewNeck) -> 
-    rewrite_compound(NewNeck,[B,H],PO);
-    rewrite_compound(NewNeck,[H,B],PO)).
-
-rewrite_compound(N,A,PO):-
-  rewrite_functor(N,NO),!,
-  maplist(rewrite_necks,A,AO),!,
-  compound_name_arguments(PO,NO,AO).
 
 % pfcPost(+Ps,+S) tries to add a fact or set of fact to the database.  For
 % each fact (or the singelton) pfcPost1 is called. It always succeeds.
 
 pfcPost([H|T],S) :- !,
-  pfcPost1(H,S),
+  must(pfcPost1(H,S)),
   pfcPost(T,S).
 pfcPost([],_) :- !.
-pfcPost(P,S) :- pfcPost1(P,S).
+pfcPost(P,S) :- must(pfcPost1(P,S)).
 
 
 % pfcPost1(+P,+S) tries to add a fact to the database, and, if it succeeded,
@@ -229,11 +206,11 @@ pfcPost(P,S) :- pfcPost1(P,S).
 % It always succeeds.
 
 pfcPost1(P,S) :- 
-  rewrite_necks(P,PO) -> 
+  tml_to_pfc(P,PO) -> 
   PO \=@= P, !,
   pfcPost(PO,S).
 
-pfcPost1({P},_) :- !, call(P).
+pfcPost1({P},_) :- !, invoke_call(pfcPost,P).
 pfcPost1(P,S) :-
   %% db ainDbToHead(P,P2),
   % pfcRemoveOldVersion(P),
@@ -378,7 +355,7 @@ mpred_halt(Format,Args) :-
 
 ainTrigger(trigPos(Trigger,Body),Support) :-
   !,
-  mpred_trace_msg('~n      Adding positive trigger ~q~n',
+  mpred_trace_msg('~n      Adding positive trigger ~p~n',
 		[trigPos(Trigger,Body)]),
   pfcAssert(trigPos(Trigger,Body),Support),
   copy_term(trigPos(Trigger,Body),Tcopy),
@@ -389,7 +366,7 @@ ainTrigger(trigPos(Trigger,Body),Support) :-
 
 ainTrigger(trigNeg(Trigger,Test,Body),Support) :-
   !,
-  mpred_trace_msg('~n      Adding negative trigger: ~q~n       test: ~q~n       body: ~q~n',
+  mpred_trace_msg('~n      Adding negative trigger: ~p~n       test: ~p~n       body: ~p~n',
 		[Trigger,Test,Body]),
   copy_term(Trigger,TriggerCopy),
   pfcAssert(trigNeg(TriggerCopy,Test,Body),Support),
@@ -494,6 +471,18 @@ pfcRem(P) :-
   from_user(S),
   pfcRem(P,S).
 
+pfcDelete(P) :- 
+  % pfcRem/1 is the pcfUser's interface - it withdraws pcfUser support for P. 
+  mpred_trace_msg('~n % Deleting Fact: ~p~n',[P]),
+  unFc(P),
+  db_retractall(P),
+  % from_user(S),
+  %forall(pfcGetSupport(P,S),ignore(pfcRemSupport(P,S))),
+  !.
+  %forall(pfcGetSupport(P,(S1,S2)),pfcRetractOrWarn(spft(P,S1,S2))),
+  %unFc1(P).
+ 
+
 pfcRem_L([H|T]) :-
   % pfcRem each element in the list.
   from_user(S),
@@ -502,7 +491,7 @@ pfcRem_L([H|T]) :-
 
 pfcRem(P,S) :-
   % pfcDebug(format("~Nremoving support ~p from ~p",[S,P])),
-  mpred_trace_msg('~n    Removing support: ~q from ~q~n',[S,P]),
+  mpred_trace_msg('~n    Removing support: ~p from ~p~n',[S,P]),
   pfcRemSupport(P,S)
      -> pcfRemoveIfUnsupported(P)
       ; mpred_warn("pfcRem/2 Could not find support ~p to remove from fact ~p",
@@ -549,6 +538,8 @@ pfcRemoveSupportsQuietly(_).
 % pfcUndo(X) undoes X.
 
 
+pfcUndo(A):- mpred_trace_msg('~n      ~p~n',[pfcUndo(A)]),fail.
+
 pfcUndo(mpred_action(A)) :-  
   % undo an action by finding a method and successfully executing it.
   !,
@@ -586,6 +577,7 @@ pfcUndo(Fact) :-
 unFc(F) :- 
   pfcRetractSupportRelations(F),
   unFc1(F).
+  
 
 unFc1(F) :-
   pfcUnFcCheckTriggers(F),
@@ -606,7 +598,7 @@ pfcRetractSupportRelations(Fact) :-
   mpred_db_type(Fact,Type),
   (Type=trigger -> pfcRemSupport(P,(_,Fact))
                 ; pfcRemSupport(P,(Fact,_))),
-  pcfRemoveIfUnsupported(P),
+  logm(pcfRemoveIfUnsupported(P)),
   fail.
 pfcRetractSupportRelations(_).
 
@@ -690,7 +682,7 @@ pfcFwd(P) :- pfcFwd1(P).
 
 % pfcFwd1(Fact) :- map_if_list(pfcFwd1,List),!.
 pfcFwd1(Fact) :-
-  fc_rule_check(Fact),
+  must(pfcProcessRule(Fact)),
   copy_term(Fact,F),
   % check positive triggers
   pfcRunPT(Fact,F),
@@ -699,35 +691,35 @@ pfcFwd1(Fact) :-
 
 
 %%
-%% fc_rule_check(P) does some special, built in forward chaining if P is 
+%% pfcProcessRule(P) does some special, built in forward chaining if P is 
 %% a rule.
 %% 
 
-fc_rule_check((P==>Q)) :-  
+pfcProcessRule((P==>Q)) :-  
   !,  
   pfcProcessRule(P,Q,(P==>Q)).
-fc_rule_check((Name::::P==>Q)) :- 
+pfcProcessRule((Name::::P==>Q)) :- 
   !,  
   pfcProcessRule(P,Q,(Name::::P==>Q)).
-fc_rule_check((P<==>Q)) :- 
+pfcProcessRule((P<==>Q)) :- 
   !, 
   pfcProcessRule(P,Q,(P<==>Q)), 
   pfcProcessRule(Q,P,(P<==>Q)).
-fc_rule_check((Name::::P<==>Q)) :- 
+pfcProcessRule((Name::::P<==>Q)) :- 
   !, 
   pfcProcessRule(P,Q,((Name::::P<==>Q))), 
   pfcProcessRule(Q,P,((Name::::P<==>Q))).
 
-fc_rule_check(('<-'(P,Q))) :-
+pfcProcessRule(('<-'(P,Q))) :-
   !,
   pfcDefineBcRule(P,Q,('<-'(P,Q))).
 
-fc_rule_check(_).
+pfcProcessRule(_).
 
 
 pfcRunPT(Fact,F) :- 
   pfcGetTriggerQuick(trigPos(F,Body)),
-  mpred_trace_msg('~n      Found positive trigger: ~q~n       body: ~q~n',
+  mpred_trace_msg('~n      Found positive trigger: ~p~n       body: ~p~n',
 		[F,Body]),
   pfcEvalLHS(Body,(Fact,trigPos(F,Body))),
   fail.
@@ -740,7 +732,8 @@ pfcRunPT(_,_).
 
 
 pfcRunNT(_Fact,F) :-
-  support3(trigNeg(F,Condition,Body),X,_),
+  %stpf3(trigNeg(F,Condition,Body),X,_),
+  spft(X,_,trigNeg(F,Condition,Body)),
   Condition,
   pfcRem(X,(_,trigNeg(F,Condition,Body))),
   fail.
@@ -813,11 +806,16 @@ mpred_eval_rhs1({Action},Support) :-
  !,
  pfcEvalAction(Action,Support).
 
+mpred_eval_rhs1('@naf'(P),_Support) :- nonvar(P),
+ % predicate to remove.
+ must(pfcDelete(P)),!.
+
 mpred_eval_rhs1(P,_Support) :-
  % predicate to remove.
  pfcNegatedLiteral(P),
+ mpred_negation(P,Q),
  !,
- pfcRem(P).
+ pfcRem(Q).
 
 mpred_eval_rhs1([X|Xrest],Support) :-
  % embedded sublist.
@@ -838,7 +836,7 @@ mpred_eval_rhs1(X,_) :-
 %%
 
 pfcEvalAction(Action,Support) :-
-  db_call(nonPfC,Action), 
+  db_call(pfcAction,Action), 
   (pfcUndoable(Action) 
      -> ainActionTrace(Action,Support) 
       ; true).
@@ -1024,6 +1022,7 @@ pfcCompileRhsTerm(P,P).
 %% with the negation operator stripped.
 
 mpred_negation((~P),P).
+%mpred_negation('@naf'(P),P).
 mpred_negation((-P),P).
 mpred_negation(( \+(P)),P).
 
@@ -1048,6 +1047,7 @@ pfcConnective('<==>').
 
 pfcConnective('-').
 pfcConnective('~').
+pfcConnective('@naf').
 pfcConnective(('\\+')).
 
 pfcProcessRule(Lhs,Rhs,ParentRule) :-
@@ -1199,47 +1199,50 @@ pfcConjoin(C1,C2,(C1,C2)).
 %% predicates for manipulating support relationships
 %%
 
-:- dynamic(support2/3).
+%:- dynamic(sftp2/3).
 :- dynamic(spft/3).
-:- dynamic(support3/3).
+%:- dynamic(stpf3/3).
 
 %% ainSupport(+Fact,+Support)
 
 ainSupport(P,(Fact,Trigger)) :-
+  db_assert_if_new(spft(P,Fact,Trigger)).
+/*ainSupport(P,(Fact,Trigger)) :-
   db_assert(spft(P,Fact,Trigger)),
-  db_assert(support2(Fact,Trigger,P)),
-  db_assert(support3(Trigger,P,Fact)).
+  s3(db_assert(sftp2(Fact,Trigger,P))),
+  s3(db_assert(stpf3(Trigger,P,Fact)))*/
 
-pfcGetSupport(P,(Fact,Trigger)) :-
+pfcGetSupport(P,(Fact,Trigger)):- spft(P,Fact,Trigger).
+/*pfcGetSupport(P,(Fact,Trigger)) :-
    nonvar(P)         -> spft(P,Fact,Trigger) 
-   ; nonvar(Fact)    -> support2(Fact,Trigger,P) 
-   ; nonvar(Trigger) -> support3(Trigger,P,Fact) 
-   ; otherwise       -> spft(P,Fact,Trigger).
-
+   ; nonvar(Fact)    -> sftp2(Fact,Trigger,P) 
+   ; nonvar(Trigger) -> stpf3(Trigger,P,Fact) 
+   ; otherwise       -> spft(P,Fact,Trigger).*/
 
 % There are three of these to try to efficiently handle the cases
 % where some of the arguments are not bound but at least one is.
-
+pfcRemSupport(P,(Fact,Trigger)) :- pfcRetractNoWarn(spft(P,Fact,Trigger)).
+/*
 pfcRemSupport(P,(Fact,Trigger)) :-
   nonvar(P),
   !,
-  pfcRetractOrWarn(spft(P,Fact,Trigger)),
-  pfcRetractOrWarn(support2(Fact,Trigger,P)),
-  pfcRetractOrWarn(support3(Trigger,P,Fact)).
+  pfcRetractNoWarn(spft(P,Fact,Trigger)),
+  pfcRetractNoWarn(sftp2(Fact,Trigger,P)),
+  pfcRetractNoWarn(stpf3(Trigger,P,Fact)).
 
 
 pfcRemSupport(P,(Fact,Trigger)) :-
   nonvar(Fact),
   !,
-  pfcRetractOrWarn(support2(Fact,Trigger,P)),
+  pfcRetractOrWarn(sftp2(Fact,Trigger,P)),
   pfcRetractOrWarn(spft(P,Fact,Trigger)),
-  pfcRetractOrWarn(support3(Trigger,P,Fact)).
+  pfcRetractOrWarn(stpf3(Trigger,P,Fact)).
 
 pfcRemSupport(P,(Fact,Trigger)) :-
-  pfcRetractOrWarn(support3(Trigger,P,Fact)),
+  pfcRetractOrWarn(stpf3(Trigger,P,Fact)),
   pfcRetractOrWarn(spft(P,Fact,Trigger)),
-  pfcRetractOrWarn(support2(Fact,Trigger,P)).
-
+  pfcRetractOrWarn(sftp2(Fact,Trigger,P)).
+*/
 
 mpred_collect_supports(Tripples) :-
   bagof_or_nil(Tripple, mpred_support_relation(Tripple), Tripples),
@@ -1292,8 +1295,8 @@ mpred_trigger_key(X,X).
 % the database and should not be present in an empty pfc database
 
 pfcDatabaseTerm(spft/3).
-pfcDatabaseTerm(support2/3).
-pfcDatabaseTerm(support3/3).
+%pfcDatabaseTerm(sftp2/3).
+%pfcDatabaseTerm(stpf3/3).
 pfcDatabaseTerm(trigPos/2).
 pfcDatabaseTerm(trigBC/2).
 pfcDatabaseTerm(trigNeg/3).
@@ -1308,8 +1311,8 @@ pfcReset :-
   db_clause(spft(P,F,Trigger),true),
   pfcRetractOrWarn(P),
   pfcRetractOrWarn(spft(P,F,Trigger)),
-  pfcRetractOrWarn(support2(F,Trigger,P)),
-  pfcRetractOrWarn(support3(Trigger,P,F)),
+  /*pfcRetractOrWarn(sftp2(F,Trigger,P)),
+  pfcRetractOrWarn(stpf3(Trigger,P,F))*,*/
   fail.
 pfcReset :-
   pfcDatabaseItem(T),
@@ -1322,9 +1325,9 @@ pfcDatabaseItem(Term) :-
   functor(Term,P,A),
   db_clause(Term,_).
 
-pfcRetractOrWarn(X) :-  db_retract(X), !.
-pfcRetractOrWarn(X) :- 
-  mpred_warn("Couldn't db_retract ~p.",[X]).
+pfcRetractOrWarn(P) :- db_retract(P)*->true; mpred_warn("Couldn't db_retract ~p.",[P]).
+
+pfcRetractNoWarn(P) :-  db_retract(P).
 
 
 
@@ -1371,7 +1374,9 @@ pfcPrintFacts(P,C) :-
   pfcClassifyFacts(L,User,Pfc,_Rule),
   format("~n~n% User added facts:",[]),
   pfcPrintitems(User),
-  format("~n~n% LogicMOO infered facts:",[]),
+  format("~n~n% System infered facts:",[]),
+  pfcPrintitems(Pfc),
+  format("~n~n% LogicMOO proofs:",[]),
   pfcPrintitemsWhy(Pfc).
 
 
@@ -1414,7 +1419,7 @@ pfcClassifyFacts([H|T],User,[H|Pfc],Rule) :-
   pfcClassifyFacts(T,User,Pfc,Rule).
 
 pfcPrintRules :-
-  format("% Rules...~n",[]),
+  format("% Current Rules...~n~n",[]),
   bagof_or_nil((P==>Q),db_clause((P==>Q),true),R1),
   pfcPrintitemsWhy(R1),
   bagof_or_nil((P<==>Q),db_clause((P<==>Q),true),R2),
@@ -1495,8 +1500,8 @@ pfcTraceAddPrint(P,S) :-
   copy_term(P:S,Pcopy:Scopy),
   numbervars(Pcopy:Scopy,0,_),
   (from_user(S)
-       -> format("~NAdding (u) ~p~n",[Pcopy])
-        ; format("~NAdding (g) ~p          % WHY ~p.",[Pcopy,Scopy])).
+       -> format("~N%% Adding (u) ~p~n",[Pcopy])
+        ; format("~N%% Adding (g) ~p          % WHY ~p.",[Pcopy,Scopy])).
 
 pfcTraceAddPrint(_,_).
 
@@ -1842,33 +1847,6 @@ mpred_selectJustificationNode(Js,Index,Step) :-
   StepNo is 1+ integer(Index*10 - JustNo*10),
   nth(StepNo,Justification,Step).
 
-:- mpred_trace.
-
-:-
-  ain_test([
-	(j(X), k(Y) ==> bothJK(X,Y)),
-	(bothJK(X,Y), go ==> jkGo(X,Y)),
-	j(1),
-	go,
-	k(2),
-        {pfcShowWhy(bothJK(1,2))}        
-       ]).
-
-
-:- mpred_trace.
-:- 
-    ain_test([(faz(X), ~baz(Y)/{X=:=Y} ==> fazbaz(X)),
-         (fazbaz(X), go ==> found(X)),
-	 (found(X), {X>=100} ==> big(X)),
-	 (found(X), {X>=10,X<100} ==> medium(X)),
-	 (found(X), {X<10} ==> little(X)),
-	 faz(1),
-	 goAhead,
-	 baz(2),
-	 baz(1)
-	]).
-
-:- mpred_trace.
 
 %:- prolog.    
 
