@@ -1392,9 +1392,11 @@ pfcPrintDB :-
    pfcPrintSupports,
    mpred_queue]).
 
-%% pfcPrintFacts ..    
 
-pfcPrintFacts :- pfcPrintFacts(_,true).
+%% pfcPrintFacts ..    
+:- dynamic(was_alreadyShown/1).
+
+pfcPrintFacts :- retractall(was_alreadyShown(_)),pfcPrintFacts(_,true).
 
 pfcPrintFacts(Pattern) :- pfcPrintFacts(Pattern,true).
 
@@ -1416,6 +1418,9 @@ pfcPrintitemsWhy(List) :- maplist(pfcPrintItemWhy,List),nl.
 
 pfcPrintItemWhy(P):- pfcGetSupport(P,S),!,pfcPrintItem(S>P).
 pfcPrintItemWhy(P):- pfcPrintItem(P).
+
+pfcPrintItem(_>P):- asserta(was_alreadyShown(P)),fail.
+pfcPrintItem(P):- asserta(was_alreadyShown(P)),fail.
 
 pfcPrintItem(S>P):- from_user(S),!,pfcPrintItem(P).
 pfcPrintItem(_>P):- 
@@ -1459,19 +1464,21 @@ pfcPrintRules :-
 pfcPrintTriggers :-
   format("% Positive triggers...~n",[]),
   bagof_or_nil(trigPos(T,B),pfcGetTrigger(trigPos(T,B)),Pts),
-  pfcPrintitems(Pts),
+  pfcPrintitemsWhy(Pts),
   format("% Negative triggers...~n",[]),
   bagof_or_nil(trigNeg(A,B,C),pfcGetTrigger(trigNeg(A,B,C)),Nts),
-  pfcPrintitems(Nts),
+  pfcPrintitemsWhy(Nts),
   format("% Goal (Backchain) triggers...~n",[]),
   bagof_or_nil(trigBC(A,B),pfcGetTrigger(trigBC(A,B)),Bts),
-  pfcPrintitems(Bts).
+  pfcPrintitemsWhy(Bts).
 
 pfcPrintSupports :- 
   format("% Supports...~n",[]),
   % temporary hack.
-  setof_or_nil((S > P), pfcGetSupport(P,S),L),
+  setof_or_nil((S > P), (pfcGetSupport(P,S),\+ alreadyShown(P)),L),
   pfcPrintitems(L).
+
+alreadyShown(P):- clause_asserted(was_alreadyShown(P)).
 
 %% pfcFact(P) is true if fact P was asserted into the database via add.
 

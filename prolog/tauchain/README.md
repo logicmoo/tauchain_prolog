@@ -109,14 +109,6 @@ TML: beginsWithJ('Joe').
 % Goal (Backchain) triggers...
 
 % Supports...
- night.
- beginsWithJ('Joe').
- canFly(bird).
- direct('London','NY').
- edge(6,3).
- father('Tom','Amy').
- holds(1,2).
- holds(3,9,12).
 
 :- dynamic mpred_queue/2.
 
@@ -202,14 +194,6 @@ TML: employee('Jane','Doe',support).
 % Goal (Backchain) triggers...
 
 % Supports...
- beginsWithJ('Jack').
- beginsWithJ('Jane').
- beginsWithJ('John').
- uncle('Jim','Joe').
- uncle('Joe','Jack').
- uncle('Joe','Jill').
- employee('Jane','Doe',support).
- employee('John','Doe',sales).
 
 :- dynamic mpred_queue/2.
 
@@ -295,15 +279,6 @@ TML: a(1,2,3,4,5,6).
 % Goal (Backchain) triggers...
 
 % Supports...
- night.
- rain.
- barks('Max').
- happy('Sue').
- employee('John','Doe').
- mother('Jane','Jack').
- employee('Jane','Doe',support).
- married('Tom','Jane',2004).
- a(1,2,3,4,5,6).
 
 :- dynamic mpred_queue/2.
 
@@ -371,22 +346,10 @@ wet proof:
 
 
 % Positive triggers...
- trigPos(rain,rhs([wet])).
- trigPos(bellowZero,rhs([freezing])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- rain.
- ==>(bellowZero,freezing).
- ==>(rain,wet).
 % ====
-wet proof:
+trigPos(rain,rhs([wet])) proof:
 
-%    1.1 rain
-%    1.2 ==>(rain,wet)
+%    1.1 ==>(rain,wet)
 % ====
 
 % ====
@@ -395,12 +358,12 @@ trigPos(bellowZero,rhs([freezing])) proof:
 %    1.1 ==>(bellowZero,freezing)
 % ====
 
-% ====
-trigPos(rain,rhs([wet])) proof:
 
-%    1.1 ==>(rain,wet)
-% ====
+% Negative triggers...
 
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -456,24 +419,6 @@ holds(2,1) proof:
 
 
 % Positive triggers...
- trigPos(holds(1,3),rhs([holds(3,1)])).
- trigPos(holds(1,2),rhs([holds(2,1)])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- ==>(holds(1,2),holds(2,1)).
- ==>(holds(1,3),holds(3,1)).
- holds(1,2).
- holds(1,4).
-% ====
-trigPos(holds(1,2),rhs([holds(2,1)])) proof:
-
-%    1.1 ==>(holds(1,2),holds(2,1))
-% ====
-
 % ====
 trigPos(holds(1,3),rhs([holds(3,1)])) proof:
 
@@ -481,12 +426,17 @@ trigPos(holds(1,3),rhs([holds(3,1)])) proof:
 % ====
 
 % ====
-holds(2,1) proof:
+trigPos(holds(1,2),rhs([holds(2,1)])) proof:
 
-%    1.1 holds(1,2)
-%    1.2 ==>(holds(1,2),holds(2,1))
+%    1.1 ==>(holds(1,2),holds(2,1))
 % ====
 
+
+% Negative triggers...
+
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -538,28 +488,18 @@ salutation('Suzi','Madam') proof:
 
 
 % Positive triggers...
- trigPos(employee('Suzi',female),rhs([salutation('Suzi','Madam')])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- ==>(employee('Suzi',female),salutation('Suzi','Madam')).
- employee('Suzi',female).
 % ====
 trigPos(employee('Suzi',female),rhs([salutation('Suzi','Madam')])) proof:
 
 %    1.1 ==>(employee('Suzi',female),salutation('Suzi','Madam'))
 % ====
 
-% ====
-salutation('Suzi','Madam') proof:
 
-%    1.1 employee('Suzi',female)
-%    1.2 ==>(employee('Suzi',female),salutation('Suzi','Madam'))
-% ====
+% Negative triggers...
 
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -769,161 +709,54 @@ salutation('Suzi','Madam') proof:
 
 
 % Positive triggers...
- trigPos(bird(A),rhs([canFly(A)])).
- trigPos(bird(A),rhs([beeps(A)])).
- trigPos(cat(A),rhs([meows(A)])).
- trigPos(employee(A,female),rhs([salutation(A,'Madam')])).
- trigPos(employee(A,male),rhs([salutation(A,'Sir')])).
- trigPos(father(A,B),rhs([parent(A,B)])).
- trigPos(mother(A,B),rhs([parent(A,B)])).
+% ====
+trigPos(bird(_83890),rhs([canFly(_83890)])) proof:
+
+%    1.1 ==>(bird(A),canFly(A))
+% ====
+
+% ====
+trigPos(bird(_83860),rhs([beeps(_83860)])) proof:
+
+%    1.1 ==>(bird(A),beeps(A))
+% ====
+
+% ====
+trigPos(cat(_83830),rhs([meows(_83830)])) proof:
+
+%    1.1 ==>(cat(A),meows(A))
+% ====
+
+% ====
+trigPos(employee(_83796,female),rhs([salutation(_83796,'Madam')])) proof:
+
+%    1.1 ==>(employee(A,female),salutation(A,'Madam'))
+% ====
+
+% ====
+trigPos(employee(_83762,male),rhs([salutation(_83762,'Sir')])) proof:
+
+%    1.1 ==>(employee(A,male),salutation(A,'Sir'))
+% ====
+
+% ====
+trigPos(father(_83728,_83730),rhs([parent(_83728,_83730)])) proof:
+
+%    1.1 ==>(father(A,B),parent(A,B))
+% ====
+
+% ====
+trigPos(mother(_83694,_83696),rhs([parent(_83694,_83696)])) proof:
+
+%    1.1 ==>(mother(A,B),parent(A,B))
+% ====
+
 
 % Negative triggers...
 
 % Goal (Backchain) triggers...
 
 % Supports...
- bird('Charlie').
- bird('Coco').
- bird('John').
- cat('Bella').
- ==>(bird(A),beeps(A)).
- ==>(bird(A),canFly(A)).
- ==>(cat(A),meows(A)).
- ==>(employee(A,male),salutation(A,'Sir')).
- ==>(employee(A,female),salutation(A,'Madam')).
- ==>(father(A,B),parent(A,B)).
- ==>(mother(A,B),parent(A,B)).
- employee('Jane',female).
- employee('John',male).
- employee('Suzi',female).
- father('Coco','Charlie').
- mother('Suzi','John').
-% ====
-beeps('Charlie') proof:
-
-%    1.1 bird('Charlie')
-%    1.2 ==>(bird(A),beeps(A))
-% ====
-
-% ====
-canFly('Charlie') proof:
-
-%    1.1 bird('Charlie')
-%    1.2 ==>(bird(A),canFly(A))
-% ====
-
-% ====
-beeps('Coco') proof:
-
-%    1.1 bird('Coco')
-%    1.2 ==>(bird(A),beeps(A))
-% ====
-
-% ====
-canFly('Coco') proof:
-
-%    1.1 bird('Coco')
-%    1.2 ==>(bird(A),canFly(A))
-% ====
-
-% ====
-beeps('John') proof:
-
-%    1.1 bird('John')
-%    1.2 ==>(bird(A),beeps(A))
-% ====
-
-% ====
-canFly('John') proof:
-
-%    1.1 bird('John')
-%    1.2 ==>(bird(A),canFly(A))
-% ====
-
-% ====
-meows('Bella') proof:
-
-%    1.1 cat('Bella')
-%    1.2 ==>(cat(A),meows(A))
-% ====
-
-% ====
-trigPos(bird(_85688),rhs([beeps(_85688)])) proof:
-
-%    1.1 ==>(bird(A),beeps(A))
-% ====
-
-% ====
-trigPos(bird(_85876),rhs([canFly(_85876)])) proof:
-
-%    1.1 ==>(bird(A),canFly(A))
-% ====
-
-% ====
-trigPos(cat(_85500),rhs([meows(_85500)])) proof:
-
-%    1.1 ==>(cat(A),meows(A))
-% ====
-
-% ====
-trigPos(employee(_85066,male),rhs([salutation(_85066,'Sir')])) proof:
-
-%    1.1 ==>(employee(A,male),salutation(A,'Sir'))
-% ====
-
-% ====
-trigPos(employee(_85282,female),rhs([salutation(_85282,'Madam')])) proof:
-
-%    1.1 ==>(employee(A,female),salutation(A,'Madam'))
-% ====
-
-% ====
-trigPos(father(_84908,_84910),rhs([parent(_84908,_84910)])) proof:
-
-%    1.1 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-trigPos(mother(_84808,_84810),rhs([parent(_84808,_84810)])) proof:
-
-%    1.1 ==>(mother(A,B),parent(A,B))
-% ====
-
-% ====
-salutation('Jane','Madam') proof:
-
-%    1.1 employee('Jane',female)
-%    1.2 ==>(employee(A,female),salutation(A,'Madam'))
-% ====
-
-% ====
-salutation('John','Sir') proof:
-
-%    1.1 employee('John',male)
-%    1.2 ==>(employee(A,male),salutation(A,'Sir'))
-% ====
-
-% ====
-salutation('Suzi','Madam') proof:
-
-%    1.1 employee('Suzi',female)
-%    1.2 ==>(employee(A,female),salutation(A,'Madam'))
-% ====
-
-% ====
-parent('Coco','Charlie') proof:
-
-%    1.1 father('Coco','Charlie')
-%    1.2 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-parent('Suzi','John') proof:
-
-%    1.1 mother('Suzi','John')
-%    1.2 ==>(mother(A,B),parent(A,B))
-% ====
-
 
 :- dynamic mpred_queue/2.
 
@@ -1090,56 +923,41 @@ human('Suzi') proof:
 
 
 % Positive triggers...
- trigPos(child(A),trigPos(male(A),rhs([boy(A)]))).
- trigPos(child(A),trigPos(female(A),rhs([girl(A)]))).
- trigPos(child(A),rhs([human(A)])).
- trigPos(adult(A),rhs([human(A)])).
- trigPos(male('John'),rhs([boy('John')])).
- trigPos(female('John'),rhs([girl('John')])).
- trigPos(male('Jack'),rhs([boy('Jack')])).
- trigPos(female('Jack'),rhs([girl('Jack')])).
- trigPos(male('Jane'),rhs([boy('Jane')])).
- trigPos(female('Jane'),rhs([girl('Jane')])).
- trigPos(male('Suzi'),rhs([boy('Suzi')])).
- trigPos(female('Suzi'),rhs([girl('Suzi')])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- adult('Amy').
- child('Jack').
- child('Jane').
- child('John').
- child('Suzi').
- female('Amy').
- female('Jane').
- female('Suzi').
- male('Jack').
- male('John').
- ==>(adult(A),human(A)).
- ==>(child(A),human(A)).
- ==>((child(A),female(A)),girl(A)).
- ==>((child(A),male(A)),boy(A)).
 % ====
-human('Amy') proof:
+trigPos(child(_126248),trigPos(male(_126248),rhs([boy(_126248)]))) proof:
 
-%    1.1 adult('Amy')
-%    1.2 ==>(adult(A),human(A))
+%    1.1 ==>((child(A),male(A)),boy(A))
 % ====
 
 % ====
-human('Jack') proof:
+trigPos(child(_126208),trigPos(female(_126208),rhs([girl(_126208)]))) proof:
 
-%    1.1 child('Jack')
-%    1.2 ==>(child(A),human(A))
+%    1.1 ==>((child(A),female(A)),girl(A))
 % ====
 
 % ====
-trigPos(female('Jack'),rhs([girl('Jack')])) proof:
+trigPos(child(_126178),rhs([human(_126178)])) proof:
 
-%    1.1 child('Jack')
+%    1.1 ==>(child(A),human(A))
+% ====
+
+% ====
+trigPos(adult(_126148),rhs([human(_126148)])) proof:
+
+%    1.1 ==>(adult(A),human(A))
+% ====
+
+% ====
+trigPos(male('John'),rhs([boy('John')])) proof:
+
+%    1.1 child('John')
+%    1.2 ==>((child(A),male(A)),boy(A))
+% ====
+
+% ====
+trigPos(female('John'),rhs([girl('John')])) proof:
+
+%    1.1 child('John')
 %    1.2 ==>((child(A),female(A)),girl(A))
 % ====
 
@@ -1151,16 +969,9 @@ trigPos(male('Jack'),rhs([boy('Jack')])) proof:
 % ====
 
 % ====
-human('Jane') proof:
+trigPos(female('Jack'),rhs([girl('Jack')])) proof:
 
-%    1.1 child('Jane')
-%    1.2 ==>(child(A),human(A))
-% ====
-
-% ====
-trigPos(female('Jane'),rhs([girl('Jane')])) proof:
-
-%    1.1 child('Jane')
+%    1.1 child('Jack')
 %    1.2 ==>((child(A),female(A)),girl(A))
 % ====
 
@@ -1172,37 +983,9 @@ trigPos(male('Jane'),rhs([boy('Jane')])) proof:
 % ====
 
 % ====
-human('John') proof:
+trigPos(female('Jane'),rhs([girl('Jane')])) proof:
 
-%    1.1 child('John')
-%    1.2 ==>(child(A),human(A))
-% ====
-
-% ====
-trigPos(female('John'),rhs([girl('John')])) proof:
-
-%    1.1 child('John')
-%    1.2 ==>((child(A),female(A)),girl(A))
-% ====
-
-% ====
-trigPos(male('John'),rhs([boy('John')])) proof:
-
-%    1.1 child('John')
-%    1.2 ==>((child(A),male(A)),boy(A))
-% ====
-
-% ====
-human('Suzi') proof:
-
-%    1.1 child('Suzi')
-%    1.2 ==>(child(A),human(A))
-% ====
-
-% ====
-trigPos(female('Suzi'),rhs([girl('Suzi')])) proof:
-
-%    1.1 child('Suzi')
+%    1.1 child('Jane')
 %    1.2 ==>((child(A),female(A)),girl(A))
 % ====
 
@@ -1214,61 +997,18 @@ trigPos(male('Suzi'),rhs([boy('Suzi')])) proof:
 % ====
 
 % ====
-girl('Jane') proof:
+trigPos(female('Suzi'),rhs([girl('Suzi')])) proof:
 
-%    1.1 female('Jane')
-%    1.2 child('Jane')
-%    1.3 ==>((child(A),female(A)),girl(A))
+%    1.1 child('Suzi')
+%    1.2 ==>((child(A),female(A)),girl(A))
 % ====
 
-% ====
-girl('Suzi') proof:
 
-%    1.1 female('Suzi')
-%    1.2 child('Suzi')
-%    1.3 ==>((child(A),female(A)),girl(A))
-% ====
+% Negative triggers...
 
-% ====
-boy('Jack') proof:
+% Goal (Backchain) triggers...
 
-%    1.1 male('Jack')
-%    1.2 child('Jack')
-%    1.3 ==>((child(A),male(A)),boy(A))
-% ====
-
-% ====
-boy('John') proof:
-
-%    1.1 male('John')
-%    1.2 child('John')
-%    1.3 ==>((child(A),male(A)),boy(A))
-% ====
-
-% ====
-trigPos(adult(_132602),rhs([human(_132602)])) proof:
-
-%    1.1 ==>(adult(A),human(A))
-% ====
-
-% ====
-trigPos(child(_132690),rhs([human(_132690)])) proof:
-
-%    1.1 ==>(child(A),human(A))
-% ====
-
-% ====
-trigPos(child(_132788),trigPos(female(_132788),rhs([girl(_132788)]))) proof:
-
-%    1.1 ==>((child(A),female(A)),girl(A))
-% ====
-
-% ====
-trigPos(child(_132906),trigPos(male(_132906),rhs([boy(_132906)]))) proof:
-
-%    1.1 ==>((child(A),male(A)),boy(A))
-% ====
-
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -1437,156 +1177,59 @@ ancestor('Tom','Sue') proof:
 
 
 % Positive triggers...
- trigPos(parent(A,B),rhs([ancestor(A,B)])).
- trigPos(parent(A,B),trigPos(ancestor(B,C),rhs([ancestor(A,C)]))).
- trigPos(ancestor('Sue',A),rhs([ancestor('Fred',A)])).
- trigPos(ancestor('Fred',A),rhs([ancestor('Jack',A)])).
- trigPos(ancestor('Fred',A),rhs([ancestor('Amy',A)])).
- trigPos(ancestor('Amy',A),rhs([ancestor('Grace',A)])).
- trigPos(ancestor('Amy',A),rhs([ancestor('Tom',A)])).
+% ====
+trigPos(parent(_167854,_167856),rhs([ancestor(_167854,_167856)])) proof:
+
+%    1.1 ==>(parent(A,B),ancestor(A,B))
+% ====
+
+% ====
+trigPos(parent(_167808,_167810),trigPos(ancestor(_167810,_167822),rhs([ancestor(_167808,_167822)]))) proof:
+
+%    1.1 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Sue',_167776),rhs([ancestor('Fred',_167776)])) proof:
+
+%    1.1 parent('Fred','Sue')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Fred',_167742),rhs([ancestor('Jack',_167742)])) proof:
+
+%    1.1 parent('Jack','Fred')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Fred',_167708),rhs([ancestor('Amy',_167708)])) proof:
+
+%    1.1 parent('Amy','Fred')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Amy',_167674),rhs([ancestor('Grace',_167674)])) proof:
+
+%    1.1 parent('Grace','Amy')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Amy',_167640),rhs([ancestor('Tom',_167640)])) proof:
+
+%    1.1 parent('Tom','Amy')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
 
 % Negative triggers...
 
 % Goal (Backchain) triggers...
 
 % Supports...
- ==>((parent(A,B),ancestor(B,C)),ancestor(A,C)).
- ==>(parent(A,B),ancestor(A,B)).
- parent('Amy','Fred').
- parent('Fred','Sue').
- parent('Grace','Amy').
- parent('Jack','Fred').
- parent('Tom','Amy').
-% ====
-trigPos(parent(_177506,_177508),trigPos(ancestor(_177508,_177520),rhs([ancestor(_177506,_177520)]))) proof:
-
-%    1.1 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-trigPos(parent(_177920,_177922),rhs([ancestor(_177920,_177922)])) proof:
-
-%    1.1 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-ancestor('Tom','Fred') proof:
-
-%    1.1 ancestor('Amy','Fred')
-%    1.2 parent('Tom','Amy')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Grace','Fred') proof:
-
-%    1.1 ancestor('Amy','Fred')
-%    1.2 parent('Grace','Amy')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Tom','Sue') proof:
-
-%    1.1 ancestor('Amy','Sue')
-%    1.2 parent('Tom','Amy')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Grace','Sue') proof:
-
-%    1.1 ancestor('Amy','Sue')
-%    1.2 parent('Grace','Amy')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Amy','Sue') proof:
-
-%    1.1 ancestor('Fred','Sue')
-%    1.2 parent('Amy','Fred')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Jack','Sue') proof:
-
-%    1.1 ancestor('Fred','Sue')
-%    1.2 parent('Jack','Fred')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-trigPos(ancestor('Fred',_177190),rhs([ancestor('Amy',_177190)])) proof:
-
-%    1.1 parent('Amy','Fred')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Amy','Fred') proof:
-
-%    1.1 parent('Amy','Fred')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Sue',_177432),rhs([ancestor('Fred',_177432)])) proof:
-
-%    1.1 parent('Fred','Sue')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Fred','Sue') proof:
-
-%    1.1 parent('Fred','Sue')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Amy',_177040),rhs([ancestor('Grace',_177040)])) proof:
-
-%    1.1 parent('Grace','Amy')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Grace','Amy') proof:
-
-%    1.1 parent('Grace','Amy')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Fred',_177340),rhs([ancestor('Jack',_177340)])) proof:
-
-%    1.1 parent('Jack','Fred')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Jack','Fred') proof:
-
-%    1.1 parent('Jack','Fred')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Amy',_176832),rhs([ancestor('Tom',_176832)])) proof:
-
-%    1.1 parent('Tom','Amy')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Tom','Amy') proof:
-
-%    1.1 parent('Tom','Amy')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
 
 :- dynamic mpred_queue/2.
 
@@ -1753,164 +1396,66 @@ tc(8,9) proof:
 
 
 % Positive triggers...
- trigPos(e(A,B),rhs([tc(A,B)])).
- trigPos(tc(A,B),trigPos(e(B,C),rhs([tc(A,C)]))).
- trigPos(e(2,A),rhs([tc(1,A)])).
- trigPos(e(3,A),rhs([tc(2,A)])).
- trigPos(e(4,A),rhs([tc(3,A)])).
- trigPos(e(5,A),rhs([tc(4,A)])).
- trigPos(e(1,A),rhs([tc(5,A)])).
- trigPos(e(9,A),rhs([tc(8,A)])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- ==>((tc(A,B),e(B,C)),tc(A,C)).
- ==>(e(A,B),tc(A,B)).
- e(1,2).
- e(2,3).
- e(3,4).
- e(4,5).
- e(5,1).
- e(8,9).
 % ====
-trigPos(tc(_216782,_216784),trigPos(e(_216784,_216796),rhs([tc(_216782,_216796)]))) proof:
-
-%    1.1 ==>((tc(A,B),e(B,C)),tc(A,C))
-% ====
-
-% ====
-trigPos(e(_217254,_217256),rhs([tc(_217254,_217256)])) proof:
+trigPos(e(_202822,_202824),rhs([tc(_202822,_202824)])) proof:
 
 %    1.1 ==>(e(A,B),tc(A,B))
 % ====
 
 % ====
-tc(1,2) proof:
+trigPos(tc(_202776,_202778),trigPos(e(_202778,_202790),rhs([tc(_202776,_202790)]))) proof:
 
-%    1.1 e(1,2)
-%    1.2 ==>(e(A,B),tc(A,B))
+%    1.1 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
 % ====
-tc(5,2) proof:
-
-%    1.1 e(1,2)
-%    1.2 tc(5,1)
-%    1.3 ==>((tc(A,B),e(B,C)),tc(A,C))
-% ====
-
-% ====
-tc(2,3) proof:
-
-%    1.1 e(2,3)
-%    1.2 ==>(e(A,B),tc(A,B))
-% ====
-
-% ====
-tc(1,3) proof:
-
-%    1.1 e(2,3)
-%    1.2 tc(1,2)
-%    1.3 ==>((tc(A,B),e(B,C)),tc(A,C))
-% ====
-
-% ====
-tc(3,4) proof:
-
-%    1.1 e(3,4)
-%    1.2 ==>(e(A,B),tc(A,B))
-% ====
-
-% ====
-tc(2,4) proof:
-
-%    1.1 e(3,4)
-%    1.2 tc(2,3)
-%    1.3 ==>((tc(A,B),e(B,C)),tc(A,C))
-% ====
-
-% ====
-tc(4,5) proof:
-
-%    1.1 e(4,5)
-%    1.2 ==>(e(A,B),tc(A,B))
-% ====
-
-% ====
-tc(3,5) proof:
-
-%    1.1 e(4,5)
-%    1.2 tc(3,4)
-%    1.3 ==>((tc(A,B),e(B,C)),tc(A,C))
-% ====
-
-% ====
-tc(5,1) proof:
-
-%    1.1 e(5,1)
-%    1.2 ==>(e(A,B),tc(A,B))
-% ====
-
-% ====
-tc(4,1) proof:
-
-%    1.1 e(5,1)
-%    1.2 tc(4,5)
-%    1.3 ==>((tc(A,B),e(B,C)),tc(A,C))
-% ====
-
-% ====
-tc(8,9) proof:
-
-%    1.1 e(8,9)
-%    1.2 ==>(e(A,B),tc(A,B))
-% ====
-
-% ====
-trigPos(e(2,_216708),rhs([tc(1,_216708)])) proof:
+trigPos(e(2,_202744),rhs([tc(1,_202744)])) proof:
 
 %    1.1 tc(1,2)
 %    1.2 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
 % ====
-trigPos(e(3,_216558),rhs([tc(2,_216558)])) proof:
+trigPos(e(3,_202710),rhs([tc(2,_202710)])) proof:
 
 %    1.1 tc(2,3)
 %    1.2 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
 % ====
-trigPos(e(4,_216408),rhs([tc(3,_216408)])) proof:
+trigPos(e(4,_202676),rhs([tc(3,_202676)])) proof:
 
 %    1.1 tc(3,4)
 %    1.2 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
 % ====
-trigPos(e(5,_216258),rhs([tc(4,_216258)])) proof:
+trigPos(e(5,_202642),rhs([tc(4,_202642)])) proof:
 
 %    1.1 tc(4,5)
 %    1.2 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
 % ====
-trigPos(e(1,_216108),rhs([tc(5,_216108)])) proof:
+trigPos(e(1,_202608),rhs([tc(5,_202608)])) proof:
 
 %    1.1 tc(5,1)
 %    1.2 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
 % ====
-trigPos(e(9,_215958),rhs([tc(8,_215958)])) proof:
+trigPos(e(9,_202574),rhs([tc(8,_202574)])) proof:
 
 %    1.1 tc(8,9)
 %    1.2 ==>((tc(A,B),e(B,C)),tc(A,C))
 % ====
 
+
+% Negative triggers...
+
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -1974,25 +1519,19 @@ canFly('Coco') proof:
 
 
 % Positive triggers...
- trigPos(bird(A),trigNeg(wounded(A),pfcBC(wounded(A)),rhs([canFly(A)]))).
+% ====
+trigPos(bird(_222976),trigNeg(wounded(_222976),pfcBC(wounded(_222976)),rhs([canFly(_222976)]))) proof:
+
+%    1.1 ==>((bird(A),~(wounded(A))),canFly(A))
+% ====
+
 
 % Negative triggers...
- trigNeg(wounded('Coco'),pfcBC(wounded('Coco')),rhs([canFly('Coco')])).
- trigNeg(wounded('Charlie'),pfcBC(wounded('Charlie')),rhs([canFly('Charlie')])).
-
-% Goal (Backchain) triggers...
-
-% Supports...
- bird('Charlie').
- bird('Coco').
- wounded('Charlie').
- ==>((bird(A),~(wounded(A))),canFly(A)).
 % ====
-canFly('Coco') proof:
+trigNeg(wounded('Coco'),pfcBC(wounded('Coco')),rhs([canFly('Coco')])) proof:
 
-%    1.1 \+wounded('Coco')
-%    1.2 bird('Coco')
-%    1.3 ==>((bird(A),~(wounded(A))),canFly(A))
+%    1.1 bird('Coco')
+%    1.2 ==>((bird(A),~(wounded(A))),canFly(A))
 % ====
 
 % ====
@@ -2002,19 +1541,10 @@ trigNeg(wounded('Charlie'),pfcBC(wounded('Charlie')),rhs([canFly('Charlie')])) p
 %    1.2 ==>((bird(A),~(wounded(A))),canFly(A))
 % ====
 
-% ====
-trigNeg(wounded('Coco'),pfcBC(wounded('Coco')),rhs([canFly('Coco')])) proof:
 
-%    1.1 bird('Coco')
-%    1.2 ==>((bird(A),~(wounded(A))),canFly(A))
-% ====
+% Goal (Backchain) triggers...
 
-% ====
-trigPos(bird(_63158),trigNeg(wounded(_63158),pfcBC(wounded(_63158)),rhs([canFly(_63158)]))) proof:
-
-%    1.1 ==>((bird(A),~(wounded(A))),canFly(A))
-% ====
-
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -2054,21 +1584,18 @@ TML: sad.
 
 
 % Positive triggers...
- trigPos(sad,rhs([~(happy)])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- sad.
- ==>(sad,~(happy)).
 % ====
 trigPos(sad,rhs([~(happy)])) proof:
 
 %    1.1 ==>(sad,~(happy))
 % ====
 
+
+% Negative triggers...
+
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -2209,31 +1736,181 @@ t(5,2) proof:
 
 
 % Positive triggers...
- trigPos(e(A,B),trigPos(notdone,rhs([t(A,B)]))).
- trigPos(notdone,rhs([t(1,2)])).
- trigPos(notdone,rhs([t(2,3)])).
- trigPos(notdone,rhs([t(3,4)])).
- trigPos(notdone,rhs([t(4,5)])).
- trigPos(notdone,rhs([t(5,1)])).
- trigPos(t(A,B),trigPos(e(B,C),trigPos(notdone,rhs([t(A,C)])))).
- trigPos(e(2,A),trigPos(notdone,rhs([t(1,A)]))).
- trigPos(notdone,rhs([t(1,3)])).
- trigPos(e(3,A),trigPos(notdone,rhs([t(2,A)]))).
- trigPos(notdone,rhs([t(2,4)])).
- trigPos(e(4,A),trigPos(notdone,rhs([t(3,A)]))).
- trigPos(notdone,rhs([t(3,5)])).
- trigPos(e(5,A),trigPos(notdone,rhs([t(4,A)]))).
- trigPos(notdone,rhs([t(4,1)])).
- trigPos(e(1,A),trigPos(notdone,rhs([t(5,A)]))).
- trigPos(notdone,rhs([t(5,2)])).
- trigPos(notdone,rhs([done])).
- trigPos(e(A,B),trigPos(done,rhs([~(t(A,B))]))).
- trigPos(done,rhs([~(t(1,2))])).
- trigPos(done,rhs([~(t(2,3))])).
- trigPos(done,rhs([~(t(3,4))])).
- trigPos(done,rhs([~(t(4,5))])).
- trigPos(done,rhs([~(t(5,1))])).
- trigPos(done,rhs([~(notdone)])).
+% ====
+trigPos(e(_76614,_76616),trigPos(notdone,rhs([t(_76614,_76616)]))) proof:
+
+%    1.1 ==>((e(A,B),notdone),t(A,B))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(1,2)])) proof:
+
+%    1.1 e(1,2)
+%    1.2 ==>((e(A,B),notdone),t(A,B))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(2,3)])) proof:
+
+%    1.1 e(2,3)
+%    1.2 ==>((e(A,B),notdone),t(A,B))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(3,4)])) proof:
+
+%    1.1 e(3,4)
+%    1.2 ==>((e(A,B),notdone),t(A,B))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(4,5)])) proof:
+
+%    1.1 e(4,5)
+%    1.2 ==>((e(A,B),notdone),t(A,B))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(5,1)])) proof:
+
+%    1.1 e(5,1)
+%    1.2 ==>((e(A,B),notdone),t(A,B))
+% ====
+
+% ====
+trigPos(t(_76422,_76424),trigPos(e(_76424,_76436),trigPos(notdone,rhs([t(_76422,_76436)])))) proof:
+
+%    1.1 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(e(2,_76384),trigPos(notdone,rhs([t(1,_76384)]))) proof:
+
+%    1.1 t(1,2)
+%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(1,3)])) proof:
+
+%    1.1 e(2,3)
+%    1.2 t(1,2)
+%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(e(3,_76316),trigPos(notdone,rhs([t(2,_76316)]))) proof:
+
+%    1.1 t(2,3)
+%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(2,4)])) proof:
+
+%    1.1 e(3,4)
+%    1.2 t(2,3)
+%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(e(4,_76248),trigPos(notdone,rhs([t(3,_76248)]))) proof:
+
+%    1.1 t(3,4)
+%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(3,5)])) proof:
+
+%    1.1 e(4,5)
+%    1.2 t(3,4)
+%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(e(5,_76180),trigPos(notdone,rhs([t(4,_76180)]))) proof:
+
+%    1.1 t(4,5)
+%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(4,1)])) proof:
+
+%    1.1 e(5,1)
+%    1.2 t(4,5)
+%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(e(1,_76112),trigPos(notdone,rhs([t(5,_76112)]))) proof:
+
+%    1.1 t(5,1)
+%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(notdone,rhs([t(5,2)])) proof:
+
+%    1.1 e(1,2)
+%    1.2 t(5,1)
+%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
+% ====
+
+% ====
+trigPos(notdone,rhs([done])) proof:
+
+%    1.1 ==>(notdone,done)
+% ====
+
+% ====
+trigPos(e(_76016,_76018),trigPos(done,rhs([~(t(_76016,_76018))]))) proof:
+
+%    1.1 ==>((e(A,B),done),~(t(A,B)))
+% ====
+
+% ====
+trigPos(done,rhs([~(t(1,2))])) proof:
+
+%    1.1 e(1,2)
+%    1.2 ==>((e(A,B),done),~(t(A,B)))
+% ====
+
+% ====
+trigPos(done,rhs([~(t(2,3))])) proof:
+
+%    1.1 e(2,3)
+%    1.2 ==>((e(A,B),done),~(t(A,B)))
+% ====
+
+% ====
+trigPos(done,rhs([~(t(3,4))])) proof:
+
+%    1.1 e(3,4)
+%    1.2 ==>((e(A,B),done),~(t(A,B)))
+% ====
+
+% ====
+trigPos(done,rhs([~(t(4,5))])) proof:
+
+%    1.1 e(4,5)
+%    1.2 ==>((e(A,B),done),~(t(A,B)))
+% ====
+
+% ====
+trigPos(done,rhs([~(t(5,1))])) proof:
+
+%    1.1 e(5,1)
+%    1.2 ==>((e(A,B),done),~(t(A,B)))
+% ====
+
+% ====
+trigPos(done,rhs([~(notdone)])) proof:
+
+%    1.1 ==>(done,~(notdone))
+% ====
+
 
 % Negative triggers...
 
@@ -2241,27 +1918,11 @@ t(5,2) proof:
 
 % Supports...
 % ====
-done proof:
-
-%    1.1 notdone
-%    1.2 ==>(notdone,done)
-% ====
-
-% ====
 t(1,2) proof:
 
 %    1.1 notdone
 %    1.2 e(1,2)
 %    1.3 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-t(1,3) proof:
-
-%    1.1 notdone
-%    1.2 e(2,3)
-%    1.3 t(1,2)
-%    1.4 ==>((t(A,B),e(B,C),notdone),t(A,C))
 % ====
 
 % ====
@@ -2273,38 +1934,11 @@ t(2,3) proof:
 % ====
 
 % ====
-t(2,4) proof:
-
-%    1.1 notdone
-%    1.2 e(3,4)
-%    1.3 t(2,3)
-%    1.4 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
 t(3,4) proof:
 
 %    1.1 notdone
 %    1.2 e(3,4)
 %    1.3 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-t(3,5) proof:
-
-%    1.1 notdone
-%    1.2 e(4,5)
-%    1.3 t(3,4)
-%    1.4 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-t(4,1) proof:
-
-%    1.1 notdone
-%    1.2 e(5,1)
-%    1.3 t(4,5)
-%    1.4 ==>((t(A,B),e(B,C),notdone),t(A,C))
 % ====
 
 % ====
@@ -2321,200 +1955,6 @@ t(5,1) proof:
 %    1.1 notdone
 %    1.2 e(5,1)
 %    1.3 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-t(5,2) proof:
-
-%    1.1 notdone
-%    1.2 e(1,2)
-%    1.3 t(5,1)
-%    1.4 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
- ==>(done,~(notdone)).
- ==>(notdone,done).
- ==>((e(A,B),done),~(t(A,B))).
- ==>((e(A,B),notdone),t(A,B)).
- ==>((t(A,B),e(B,C),notdone),t(A,C)).
- e(1,2).
- e(2,3).
- e(3,4).
- e(4,5).
- e(5,1).
-% ====
-trigPos(done,rhs([~(notdone)])) proof:
-
-%    1.1 ==>(done,~(notdone))
-% ====
-
-% ====
-trigPos(notdone,rhs([done])) proof:
-
-%    1.1 ==>(notdone,done)
-% ====
-
-% ====
-trigPos(e(_115506,_115508),trigPos(done,rhs([~(t(_115506,_115508))]))) proof:
-
-%    1.1 ==>((e(A,B),done),~(t(A,B)))
-% ====
-
-% ====
-trigPos(e(_117664,_117666),trigPos(notdone,rhs([t(_117664,_117666)]))) proof:
-
-%    1.1 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-trigPos(t(_116892,_116894),trigPos(e(_116894,_116906),trigPos(notdone,rhs([t(_116892,_116906)])))) proof:
-
-%    1.1 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(done,rhs([~(t(1,2))])) proof:
-
-%    1.1 e(1,2)
-%    1.2 ==>((e(A,B),done),~(t(A,B)))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(1,2)])) proof:
-
-%    1.1 e(1,2)
-%    1.2 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(5,2)])) proof:
-
-%    1.1 e(1,2)
-%    1.2 t(5,1)
-%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(done,rhs([~(t(2,3))])) proof:
-
-%    1.1 e(2,3)
-%    1.2 ==>((e(A,B),done),~(t(A,B)))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(2,3)])) proof:
-
-%    1.1 e(2,3)
-%    1.2 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(1,3)])) proof:
-
-%    1.1 e(2,3)
-%    1.2 t(1,2)
-%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(done,rhs([~(t(3,4))])) proof:
-
-%    1.1 e(3,4)
-%    1.2 ==>((e(A,B),done),~(t(A,B)))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(3,4)])) proof:
-
-%    1.1 e(3,4)
-%    1.2 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(2,4)])) proof:
-
-%    1.1 e(3,4)
-%    1.2 t(2,3)
-%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(done,rhs([~(t(4,5))])) proof:
-
-%    1.1 e(4,5)
-%    1.2 ==>((e(A,B),done),~(t(A,B)))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(4,5)])) proof:
-
-%    1.1 e(4,5)
-%    1.2 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(3,5)])) proof:
-
-%    1.1 e(4,5)
-%    1.2 t(3,4)
-%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(done,rhs([~(t(5,1))])) proof:
-
-%    1.1 e(5,1)
-%    1.2 ==>((e(A,B),done),~(t(A,B)))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(5,1)])) proof:
-
-%    1.1 e(5,1)
-%    1.2 ==>((e(A,B),notdone),t(A,B))
-% ====
-
-% ====
-trigPos(notdone,rhs([t(4,1)])) proof:
-
-%    1.1 e(5,1)
-%    1.2 t(4,5)
-%    1.3 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(e(2,_116806),trigPos(notdone,rhs([t(1,_116806)]))) proof:
-
-%    1.1 t(1,2)
-%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(e(3,_116576),trigPos(notdone,rhs([t(2,_116576)]))) proof:
-
-%    1.1 t(2,3)
-%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(e(4,_116346),trigPos(notdone,rhs([t(3,_116346)]))) proof:
-
-%    1.1 t(3,4)
-%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(e(5,_116116),trigPos(notdone,rhs([t(4,_116116)]))) proof:
-
-%    1.1 t(4,5)
-%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
-% ====
-
-% ====
-trigPos(e(1,_115886),trigPos(notdone,rhs([t(5,_115886)]))) proof:
-
-%    1.1 t(5,1)
-%    1.2 ==>((t(A,B),e(B,C),notdone),t(A,C))
 % ====
 
 
@@ -2776,276 +2216,92 @@ parent('Tony','CarolII') proof:
 
 
 % Positive triggers...
- trigPos(father(A,B),rhs([parent(A,B)])).
- trigPos(mother(A,B),rhs([parent(A,B)])).
- trigPos(parent(A,B),rhs([ancestor(A,B)])).
- trigPos(parent(A,B),trigPos(ancestor(B,C),rhs([ancestor(A,C)]))).
- trigPos(ancestor('Amy',A),rhs([ancestor('Tom',A)])).
- trigPos(ancestor('Fred',A),rhs([ancestor('Jack',A)])).
- trigPos(ancestor('CarolII',A),rhs([ancestor('Tony',A)])).
- trigPos(ancestor('CarolIII',A),rhs([ancestor('Fred',A)])).
- trigPos(ancestor('Amy',A),rhs([ancestor('Grace',A)])).
- trigPos(ancestor('Fred',A),rhs([ancestor('Amy',A)])).
- trigPos(ancestor('CarolII',A),rhs([ancestor('CarolI',A)])).
- trigPos(ancestor('CarolIII',A),rhs([ancestor('CarolII',A)])).
+% ====
+trigPos(father(_131328,_131330),rhs([parent(_131328,_131330)])) proof:
+
+%    1.1 ==>(father(A,B),parent(A,B))
+% ====
+
+% ====
+trigPos(mother(_131294,_131296),rhs([parent(_131294,_131296)])) proof:
+
+%    1.1 ==>(mother(A,B),parent(A,B))
+% ====
+
+% ====
+trigPos(parent(_131260,_131262),rhs([ancestor(_131260,_131262)])) proof:
+
+%    1.1 ==>(parent(A,B),ancestor(A,B))
+% ====
+
+% ====
+trigPos(parent(_131214,_131216),trigPos(ancestor(_131216,_131228),rhs([ancestor(_131214,_131228)]))) proof:
+
+%    1.1 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Amy',_131182),rhs([ancestor('Tom',_131182)])) proof:
+
+%    1.1 parent('Tom','Amy')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Fred',_131148),rhs([ancestor('Jack',_131148)])) proof:
+
+%    1.1 parent('Jack','Fred')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('CarolII',_131114),rhs([ancestor('Tony',_131114)])) proof:
+
+%    1.1 parent('Tony','CarolII')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('CarolIII',_131080),rhs([ancestor('Fred',_131080)])) proof:
+
+%    1.1 parent('Fred','CarolIII')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Amy',_131046),rhs([ancestor('Grace',_131046)])) proof:
+
+%    1.1 parent('Grace','Amy')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('Fred',_131012),rhs([ancestor('Amy',_131012)])) proof:
+
+%    1.1 parent('Amy','Fred')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('CarolII',_130978),rhs([ancestor('CarolI',_130978)])) proof:
+
+%    1.1 parent('CarolI','CarolII')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
+% ====
+trigPos(ancestor('CarolIII',_130944),rhs([ancestor('CarolII',_130944)])) proof:
+
+%    1.1 parent('CarolII','CarolIII')
+%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
+% ====
+
 
 % Negative triggers...
 
 % Goal (Backchain) triggers...
 
 % Supports...
- ==>((parent(A,B),ancestor(B,C)),ancestor(A,C)).
- ==>(father(A,B),parent(A,B)).
- ==>(mother(A,B),parent(A,B)).
- ==>(parent(A,B),ancestor(A,B)).
- father('Fred','CarolIII').
- father('Jack','Fred').
- father('Tom','Amy').
- father('Tony','CarolII').
- mother('Amy','Fred').
- mother('CarolI','CarolII').
- mother('CarolII','CarolIII').
- mother('Grace','Amy').
-% ====
-trigPos(parent(_174612,_174614),trigPos(ancestor(_174614,_174626),rhs([ancestor(_174612,_174626)]))) proof:
-
-%    1.1 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-trigPos(father(_175864,_175866),rhs([parent(_175864,_175866)])) proof:
-
-%    1.1 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-trigPos(mother(_175532,_175534),rhs([parent(_175532,_175534)])) proof:
-
-%    1.1 ==>(mother(A,B),parent(A,B))
-% ====
-
-% ====
-trigPos(parent(_175200,_175202),rhs([ancestor(_175200,_175202)])) proof:
-
-%    1.1 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-ancestor('Grace','Fred') proof:
-
-%    1.1 ancestor('Amy','Fred')
-%    1.2 parent('Grace','Amy')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Tom','Fred') proof:
-
-%    1.1 ancestor('Amy','Fred')
-%    1.2 parent('Tom','Amy')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('CarolI','CarolIII') proof:
-
-%    1.1 ancestor('CarolII','CarolIII')
-%    1.2 parent('CarolI','CarolII')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Tony','CarolIII') proof:
-
-%    1.1 ancestor('CarolII','CarolIII')
-%    1.2 parent('Tony','CarolII')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Amy','CarolIII') proof:
-
-%    1.1 ancestor('Fred','CarolIII')
-%    1.2 parent('Amy','Fred')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Jack','CarolIII') proof:
-
-%    1.1 ancestor('Fred','CarolIII')
-%    1.2 parent('Jack','Fred')
-%    1.3 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-parent('Fred','CarolIII') proof:
-
-%    1.1 father('Fred','CarolIII')
-%    1.2 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-parent('Jack','Fred') proof:
-
-%    1.1 father('Jack','Fred')
-%    1.2 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-parent('Tom','Amy') proof:
-
-%    1.1 father('Tom','Amy')
-%    1.2 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-parent('Tony','CarolII') proof:
-
-%    1.1 father('Tony','CarolII')
-%    1.2 ==>(father(A,B),parent(A,B))
-% ====
-
-% ====
-parent('Amy','Fred') proof:
-
-%    1.1 mother('Amy','Fred')
-%    1.2 ==>(mother(A,B),parent(A,B))
-% ====
-
-% ====
-parent('CarolI','CarolII') proof:
-
-%    1.1 mother('CarolI','CarolII')
-%    1.2 ==>(mother(A,B),parent(A,B))
-% ====
-
-% ====
-parent('CarolII','CarolIII') proof:
-
-%    1.1 mother('CarolII','CarolIII')
-%    1.2 ==>(mother(A,B),parent(A,B))
-% ====
-
-% ====
-parent('Grace','Amy') proof:
-
-%    1.1 mother('Grace','Amy')
-%    1.2 ==>(mother(A,B),parent(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Fred',_173846),rhs([ancestor('Amy',_173846)])) proof:
-
-%    1.1 parent('Amy','Fred')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Amy','Fred') proof:
-
-%    1.1 parent('Amy','Fred')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('CarolII',_173696),rhs([ancestor('CarolI',_173696)])) proof:
-
-%    1.1 parent('CarolI','CarolII')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('CarolI','CarolII') proof:
-
-%    1.1 parent('CarolI','CarolII')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('CarolIII',_173546),rhs([ancestor('CarolII',_173546)])) proof:
-
-%    1.1 parent('CarolII','CarolIII')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('CarolII','CarolIII') proof:
-
-%    1.1 parent('CarolII','CarolIII')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('CarolIII',_174088),rhs([ancestor('Fred',_174088)])) proof:
-
-%    1.1 parent('Fred','CarolIII')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Fred','CarolIII') proof:
-
-%    1.1 parent('Fred','CarolIII')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Amy',_173996),rhs([ancestor('Grace',_173996)])) proof:
-
-%    1.1 parent('Grace','Amy')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Grace','Amy') proof:
-
-%    1.1 parent('Grace','Amy')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Fred',_174388),rhs([ancestor('Jack',_174388)])) proof:
-
-%    1.1 parent('Jack','Fred')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Jack','Fred') proof:
-
-%    1.1 parent('Jack','Fred')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('Amy',_174538),rhs([ancestor('Tom',_174538)])) proof:
-
-%    1.1 parent('Tom','Amy')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Tom','Amy') proof:
-
-%    1.1 parent('Tom','Amy')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
-% ====
-trigPos(ancestor('CarolII',_174238),rhs([ancestor('Tony',_174238)])) proof:
-
-%    1.1 parent('Tony','CarolII')
-%    1.2 ==>((parent(A,B),ancestor(B,C)),ancestor(A,C))
-% ====
-
-% ====
-ancestor('Tony','CarolII') proof:
-
-%    1.1 parent('Tony','CarolII')
-%    1.2 ==>(parent(A,B),ancestor(A,B))
-% ====
-
 
 :- dynamic mpred_queue/2.
 
@@ -3192,90 +2448,28 @@ mortal('John') proof:
 
 
 % Positive triggers...
- trigPos(bird(A),rhs([being(A)])).
- trigPos(human(A),rhs([being(A)])).
- trigPos(being(A),rhs([mortal(A)])).
- trigPos(mortal(A),trigPos(armageddon,rhs([dead(A)]))).
- trigPos(armageddon,rhs([dead('Charlie')])).
- trigPos(armageddon,rhs([dead('Coco')])).
- trigPos(armageddon,rhs([dead('John')])).
- trigPos(armageddon,rhs([dead('Jane')])).
- trigPos(dead(A),rhs([~(bird(A))])).
- trigPos(dead(A),rhs([~(human(A))])).
- trigPos(dead(A),rhs([~(mortal(A))])).
- trigPos(dead(A),rhs([~(being(A))])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- bird('Charlie').
- bird('Coco').
- human('Jane').
- human('John').
- ==>(being(A),mortal(A)).
- ==>(bird(A),being(A)).
- ==>(dead(A),~(being(A))).
- ==>(dead(A),~(mortal(A))).
- ==>(dead(A),~(human(A))).
- ==>(dead(A),~(bird(A))).
- ==>(human(A),being(A)).
- ==>((mortal(A),armageddon),dead(A)).
 % ====
-mortal('Charlie') proof:
+trigPos(bird(_178938),rhs([being(_178938)])) proof:
 
-%    1.1 being('Charlie')
-%    1.2 ==>(being(A),mortal(A))
+%    1.1 ==>(bird(A),being(A))
 % ====
 
 % ====
-mortal('Coco') proof:
+trigPos(human(_178908),rhs([being(_178908)])) proof:
 
-%    1.1 being('Coco')
-%    1.2 ==>(being(A),mortal(A))
+%    1.1 ==>(human(A),being(A))
 % ====
 
 % ====
-mortal('Jane') proof:
+trigPos(being(_178878),rhs([mortal(_178878)])) proof:
 
-%    1.1 being('Jane')
-%    1.2 ==>(being(A),mortal(A))
+%    1.1 ==>(being(A),mortal(A))
 % ====
 
 % ====
-mortal('John') proof:
+trigPos(mortal(_178842),trigPos(armageddon,rhs([dead(_178842)]))) proof:
 
-%    1.1 being('John')
-%    1.2 ==>(being(A),mortal(A))
-% ====
-
-% ====
-being('Charlie') proof:
-
-%    1.1 bird('Charlie')
-%    1.2 ==>(bird(A),being(A))
-% ====
-
-% ====
-being('Coco') proof:
-
-%    1.1 bird('Coco')
-%    1.2 ==>(bird(A),being(A))
-% ====
-
-% ====
-being('Jane') proof:
-
-%    1.1 human('Jane')
-%    1.2 ==>(human(A),being(A))
-% ====
-
-% ====
-being('John') proof:
-
-%    1.1 human('John')
-%    1.2 ==>(human(A),being(A))
+%    1.1 ==>((mortal(A),armageddon),dead(A))
 % ====
 
 % ====
@@ -3293,13 +2487,6 @@ trigPos(armageddon,rhs([dead('Coco')])) proof:
 % ====
 
 % ====
-trigPos(armageddon,rhs([dead('Jane')])) proof:
-
-%    1.1 mortal('Jane')
-%    1.2 ==>((mortal(A),armageddon),dead(A))
-% ====
-
-% ====
 trigPos(armageddon,rhs([dead('John')])) proof:
 
 %    1.1 mortal('John')
@@ -3307,53 +2494,42 @@ trigPos(armageddon,rhs([dead('John')])) proof:
 % ====
 
 % ====
-trigPos(being(_69324),rhs([mortal(_69324)])) proof:
+trigPos(armageddon,rhs([dead('Jane')])) proof:
 
-%    1.1 ==>(being(A),mortal(A))
+%    1.1 mortal('Jane')
+%    1.2 ==>((mortal(A),armageddon),dead(A))
 % ====
 
 % ====
-trigPos(bird(_69700),rhs([being(_69700)])) proof:
-
-%    1.1 ==>(bird(A),being(A))
-% ====
-
-% ====
-trigPos(dead(_68334),rhs([~(being(_68334))])) proof:
-
-%    1.1 ==>(dead(A),~(being(A)))
-% ====
-
-% ====
-trigPos(dead(_68434),rhs([~(mortal(_68434))])) proof:
-
-%    1.1 ==>(dead(A),~(mortal(A)))
-% ====
-
-% ====
-trigPos(dead(_68534),rhs([~(human(_68534))])) proof:
-
-%    1.1 ==>(dead(A),~(human(A)))
-% ====
-
-% ====
-trigPos(dead(_68634),rhs([~(bird(_68634))])) proof:
+trigPos(dead(_178704),rhs([~(bird(_178704))])) proof:
 
 %    1.1 ==>(dead(A),~(bird(A)))
 % ====
 
 % ====
-trigPos(human(_69512),rhs([being(_69512)])) proof:
+trigPos(dead(_178670),rhs([~(human(_178670))])) proof:
 
-%    1.1 ==>(human(A),being(A))
+%    1.1 ==>(dead(A),~(human(A)))
 % ====
 
 % ====
-trigPos(mortal(_69024),trigPos(armageddon,rhs([dead(_69024)]))) proof:
+trigPos(dead(_178636),rhs([~(mortal(_178636))])) proof:
 
-%    1.1 ==>((mortal(A),armageddon),dead(A))
+%    1.1 ==>(dead(A),~(mortal(A)))
 % ====
 
+% ====
+trigPos(dead(_178602),rhs([~(being(_178602))])) proof:
+
+%    1.1 ==>(dead(A),~(being(A)))
+% ====
+
+
+% Negative triggers...
+
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -3417,24 +2593,48 @@ start proof:
 
 
 % Positive triggers...
- trigPos(start,rhs([running])).
- trigPos(running,rhs([~(start)])).
- trigPos(running,rhs([stop])).
- trigPos(stop,rhs([~(running)])).
- trigPos(stop,rhs([start])).
- trigPos(start,rhs([~(stop)])).
+% ====
+trigPos(start,rhs([running])) proof:
+
+%    1.1 ==>(start,running)
+% ====
+
+% ====
+trigPos(running,rhs([~(start)])) proof:
+
+%    1.1 ==>(running,~(start))
+% ====
+
+% ====
+trigPos(running,rhs([stop])) proof:
+
+%    1.1 ==>(running,stop)
+% ====
+
+% ====
+trigPos(stop,rhs([~(running)])) proof:
+
+%    1.1 ==>(stop,~(running))
+% ====
+
+% ====
+trigPos(stop,rhs([start])) proof:
+
+%    1.1 ==>(stop,start)
+% ====
+
+% ====
+trigPos(start,rhs([~(stop)])) proof:
+
+%    1.1 ==>(start,~(stop))
+% ====
+
 
 % Negative triggers...
 
 % Goal (Backchain) triggers...
 
 % Supports...
- ==>(running,stop).
- ==>(running,~(start)).
- ==>(start,running).
- ==>(start,~(stop)).
- ==>(stop,start).
- ==>(stop,~(running)).
 % ====
 stop proof:
 
@@ -3447,49 +2647,6 @@ running proof:
 
 %    1.1 start
 %    1.2 ==>(start,running)
-% ====
-
-% ====
-start proof:
-
-%    1.1 stop
-%    1.2 ==>(stop,start)
-% ====
-
-% ====
-trigPos(running,rhs([stop])) proof:
-
-%    1.1 ==>(running,stop)
-% ====
-
-% ====
-trigPos(running,rhs([~(start)])) proof:
-
-%    1.1 ==>(running,~(start))
-% ====
-
-% ====
-trigPos(start,rhs([running])) proof:
-
-%    1.1 ==>(start,running)
-% ====
-
-% ====
-trigPos(start,rhs([~(stop)])) proof:
-
-%    1.1 ==>(start,~(stop))
-% ====
-
-% ====
-trigPos(stop,rhs([start])) proof:
-
-%    1.1 ==>(stop,start)
-% ====
-
-% ====
-trigPos(stop,rhs([~(running)])) proof:
-
-%    1.1 ==>(stop,~(running))
 % ====
 
 
@@ -3546,21 +2703,10 @@ running proof:
 
 
 % Positive triggers...
- trigPos(start,rhs([running])).
- trigPos(running,rhs([~(start)])).
-
-% Negative triggers...
-
-% Goal (Backchain) triggers...
-
-% Supports...
- ==>(running,~(start)).
- ==>(start,running).
 % ====
-running proof:
+trigPos(start,rhs([running])) proof:
 
-%    1.1 start
-%    1.2 ==>(start,running)
+%    1.1 ==>(start,running)
 % ====
 
 % ====
@@ -3569,12 +2715,12 @@ trigPos(running,rhs([~(start)])) proof:
 %    1.1 ==>(running,~(start))
 % ====
 
-% ====
-trigPos(start,rhs([running])) proof:
 
-%    1.1 ==>(start,running)
-% ====
+% Negative triggers...
 
+% Goal (Backchain) triggers...
+
+% Supports...
 
 :- dynamic mpred_queue/2.
 
@@ -3585,5 +2731,4 @@ trigPos(start,rhs([running])) proof:
 ?- ^D
 % halt
 (base) root@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests#
-
 
