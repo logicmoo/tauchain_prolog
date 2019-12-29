@@ -458,7 +458,7 @@ running :- start.
 
 :- current_prolog_flag(os_argv,_).
 
-:- ensure_loaded(tml_interp).
+:- ensure_loaded(library(tauchain/tml_interp)).
 
 :- writeln('# READER TESTS').
 :- writeln('````').
@@ -565,9 +565,10 @@ ancestor ?X ?Y :- parent ?X ?Z, ancestor ?Z ?Y. `).
 %:- break.
 %:- cls.
 
-% :- pfcWatch.
+%:- pfcWatch, mpred_trace.
+
 :- tml_examples([_|List]), 
-   %%reverse(List,RList),
+   % reverse(List,[_,R|_RList]),
    maplist(ain_test,List).
 /*
 

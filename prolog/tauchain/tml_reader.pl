@@ -225,7 +225,7 @@ pred_expr(Pred)    --> single_arg_np(X),item(infix(Cs)),!,single_arg_np(Y), {uni
 pred_expr(Pred)    --> symbol(Cs),`(`, quietly(arg_list(wst,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs),`(`, !, quietly(arg_list(wstc,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs), wst, arg_list(wst,List), {List\==[]}, {univ_holds(Pred,[Cs|List])}.
-pred_expr('@naf'(A))  --> item(`~`),!,pred_expr(A).
+pred_expr('~'(A))  --> item(`~`),!,pred_expr(A).
 pred_expr(A)       --> symbol(A).
 
 infix(Cs) --> {infix_op(Cs),atom_codes(Cs,Codes)},Codes,!.
@@ -307,4 +307,4 @@ show_tml_read(X):- is_list(X),!, maplist(show_tml_read,X).
 show_tml_read(X):- format('~NTML: ',X),format_tml(_Arg, X).
 
 %:- [qvar_rewriter].
-
+           
