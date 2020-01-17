@@ -1,8 +1,18 @@
-:- use_module(library(clpfd)).
+/*
+ To run...
+
+
+  dmiles@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp$ swipl -f a_1000_9.tml.pl
+
+
+*/
 
 show_results(P):- time(forall(P,format('~N~q.~N',[P]))).
 
-:- ensure_loaded(detect_autotabled).
+:- use_module(library(clpfd)).
+:- use_module(detect_autotabled).
+
+
 :- install_autotable(true).
 
 fact(0,1).
@@ -13,11 +23,8 @@ fact(X,Y) :-
    B * 2 #= Y.
 
 :- listing(fact/2).
-:- show_results(fact(_,_)).
 
 /*   
-
-RESULTING OUTPUT
 
 LISTING:
 
@@ -57,8 +64,13 @@ fact(X, Y) :-
         clpfd:clpfd_equal(B*2, E)
     ;   clpfd:clpfd_equal(B*2, Y)
     ).
+*/
 
-RESULT:
+:- show_results(fact(_,_)).
+
+/*   
+
+RESULTING OUTPUT
 
 fact(3,8).
 fact(2,4).
@@ -73,6 +85,12 @@ fact(8,256).
 */
 
 
+
+
+
+
+/* re-order the search */ 
+
 factr(0,1).
 factr(X,Y) :- 
    X #< 9,
@@ -81,22 +99,12 @@ factr(X,Y) :-
    factr(A,B).
 
 :- listing(factr/2).
-:- show_results(factr(_,_)).
 
 /*   
 
 LISTING:
 
 :- table factr/2 as variant.
-
-factr(0, 1).
-factr(A, D) :-
-    factr(B, C),
-    A#<9,
-    B+1#=A,
-    C*2#=D.
-
-WELL :///
 
 factr(0, 1).
 factr(B, F) :-
@@ -120,6 +128,12 @@ factr(B, F) :-
     ->  F is E*2
     ;   clpfd:clpfd_equal(E*2, F)
     ).
+
+*/
+
+:- show_results(factr(_,_)).
+
+/*
 
 RESULT:
 
