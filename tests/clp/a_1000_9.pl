@@ -2,12 +2,13 @@
  To run...
 
 
-  dmiles@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp$ swipl -f a_1000_9.tml.pl
+  dmiles@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp$ swipl -f a_1000_9.pl
 
 
 */
 
-show_results(P):- time(forall(P,format('~N~q.~N',[P]))).
+:- meta_predicate(show_results(0)).
+show_results(P):- prolog_statistics:time(forall(P,format('~N~q.~N',[P]))).
 
 :- use_module(library(clpfd)).
 :- use_module(detect_autotabled).

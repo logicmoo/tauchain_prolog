@@ -1,8 +1,23 @@
 
 :- module(detect_autotabled, 
   [detect_autotable/4,
-  autotable_module/2,
+   detect_autotable/2,
+   do_detect_autotable/5,
+   autotable_module/2,
    install_autotable/1]).
+
+:- module_transparent(do_detect_autotable/5).
+do_detect_autotable(M,(H:-B0),Pos,GO,PosO):-
+ \+ predicate_property(M:H,tabled),
+ functor(H,F,A),
+ strip_module(foo,M0,_),
+ in_body(M,F,A,B0), 
+ table(M:F/A),!,
+ reorder_tbody(M,F,A,B0,B),
+ \+ (B0==B),
+ expand_goal(B,Pos,BB,PosM),
+ expand_term((M0:( (M:H) :-BB)),PosM,GO,PosO),
+ !.
 
 :- module_transparent(meta_args/2).
 meta_args(Body,METAS):-
@@ -83,15 +98,15 @@ detect_autotable(Rule,Pos,GO,PosO):-
  strip_module(Rule,M0,(H0:-B0)),
  M0:strip_module(H0,M,H),
  autotable_module(M, true),
- \+ predicate_property(M:H,tabled),
- functor(H,F,A), 
- in_body(M,F,A,B0), 
- table(M:F/A),!,
- reorder_tbody(M,F,A,B0,B),
- \+ (B0==B),
- expand_goal(B,Pos,BB,PosM),
- expand_term((M0:( (M:H) :-BB)),PosM,GO,PosO),
- !.
+ M0:do_detect_autotable(M,(H:-B0),Pos,GO,PosO).
+
+
+:- module_transparent(detect_autotable/2).
+detect_autotable(Rule,GO):-
+ strip_module(Rule,M0,(H0:-B0)),
+ M0:strip_module(H0,M,H),
+ do_detect_autotable(M,(H:-B0),_Pos,GO,_PosO).
+
 
 :- meta_predicate(install_autotable(:)).
 install_autotable(M:TF):-

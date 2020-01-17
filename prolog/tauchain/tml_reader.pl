@@ -1,4 +1,4 @@
-:- module(tml_reader,[parse_tml/2,test_tml_r/1,tml_unnumbervars/2,tml_to_pfc/2,pfc_to_tml/2,into_codes_list_s/2,codes_list/1,chars_list/1,into_char_list_s/2,show_tml_read/1]).
+:- module(tml_reader,[parse_tml/2,test_tml_r/1,tml_unnumbervars/2,tml_to_clp/2,tml_to_pfc/2,pfc_to_tml/2,into_codes_list_s/2,codes_list/1,chars_list/1,into_char_list_s/2,show_tml_read/1]).
 
 :- use_module(library(logicmoo_common)).
 
@@ -65,6 +65,11 @@ tml_to_pfc(ExprsVs,Exprs):-
   copy_term(ExprsU,ExprsNA,_),!,
   rewrite_necks(tml(h),pfc(h),ExprsNA,Exprs),!.
 
+tml_to_clp(ExprsVs,Exprs):-
+  unnumbervars(ExprsVs,ExprsU),
+  copy_term(ExprsU,ExprsNA,_),!,
+  rewrite_necks(tml(h),clp(h),ExprsNA,Exprs),!.
+
 pfc_to_tml(ExprsVs,Exprs):-
   unnumbervars(ExprsVs,ExprsU),
   copy_term(ExprsU,ExprsNA,_),!,
@@ -82,6 +87,10 @@ bh_neck('=>').
 bh_neck('==>').
 rewrite_functor(_FromL,pfc(_),(not),( \+ )).
 rewrite_functor(_FromL,tml(_),(\+),(~)).
+rewrite_functor(_FromL,clp(_),(=),('#=')).
+rewrite_functor(_FromL,clp(_),(<),('#<')).
+rewrite_functor(_FromL,clp(_),(>),('#>')).
+rewrite_functor(_FromL,clp(_),(:-),(':-')).
 rewrite_functor(tml(_),NTML, (:-), ('==>')):- NTML \= tml(_), !.
 rewrite_functor(FromL,To,From,To):- clause(rewrite_functor(To,FromL,To,From),Body), Body \= (clause(_,_),_), Body,!.
 rewrite_functor(_FromL,_Lang,F,F).
@@ -221,12 +230,20 @@ single_arg_np(A)       --> symbol(A),npeek(`(`),!.
 item(Pred) --> ws,Pred,ws.
 
 pred_expr(Pred) --> wsp, !, pred_expr(Pred).
-pred_expr(Pred)    --> single_arg_np(X),item(infix(Cs)),!,single_arg_np(Y), {univ_holds(Pred,[Cs,X,Y])}.
+pred_expr(Jiggled)    --> single_arg_np(X),item(infix(Cs)),more_expr(Y), {univ_holds(Pred,[Cs,X,Y]), jiggle_infix(Pred,Jiggled)}.
 pred_expr(Pred)    --> symbol(Cs),`(`, quietly(arg_list(wst,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs),`(`, !, quietly(arg_list(wstc,List)), {List\==[]}, item(`)`), {univ_holds(Pred,[Cs|List])}.
 pred_expr(Pred)    --> symbol(Cs), wst, arg_list(wst,List), {List\==[]}, {univ_holds(Pred,[Cs|List])}.
 pred_expr('~'(A))  --> item(`~`),!,pred_expr(A).
 pred_expr(A)       --> symbol(A).
+
+
+more_expr(Jiggled) --> single_arg_np(X),item(infix(Cs)),!,more_expr(Y), {univ_holds(Pred,[Cs,X,Y]), jiggle_infix(Pred,Jiggled)}.
+more_expr(X) --> single_arg_np(X).
+
+jiggle_infix(X+(Y=Z),X+Y=Z):-!.
+jiggle_infix(X*(Y=Z),X*Y=Z):-!.
+jiggle_infix(Pred,Pred).
 
 infix(Cs) --> {infix_op(Cs),atom_codes(Cs,Codes)},Codes,!.
 
@@ -238,6 +255,11 @@ infix_op('>=').
 infix_op('=').
 infix_op('<').
 infix_op('>').
+infix_op('**').
+infix_op('*').
+infix_op('/').
+infix_op('+').
+infix_op('-').
 
 univ_holds(Pred,[Cs,Holds]):-compound(Holds),Holds=..[holds|List],!,univ_holds(Pred,[Cs|List]).
 univ_holds(Pred,[Cs|List]):- atom(Cs),!,Pred =.. [Cs|List].

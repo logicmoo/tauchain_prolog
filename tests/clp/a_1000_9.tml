@@ -1,0 +1,84 @@
+/*
+ To run...
+
+
+  dmiles@gitlab:/opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp$ swipl -f a_1000_9.tml
+
+
+*/
+:- use_module(library(tauchain/tml_reader)).
+
+:- meta_predicate(show_results(0)).
+show_results(P):- prolog_statistics:time(forall(P,format('~N~q.~N',[P]))).
+
+:- use_module(library(clpfd)).
+:- use_module(detect_autotabled).
+
+
+:- install_autotable(true).
+
+maybe_detect_autotable(I,O):- detect_autotable(I,O),!.
+maybe_detect_autotable(O,O).
+
+assert_tml(P):- tml_to_clp(P,C),dmsg(adding(C)),maybe_detect_autotable(C,O),dmsg(asserting(O)),assert(O).
+add_tml(Str):- parse_tml(Str,P),maplist(assert_tml,P).
+
+:- add_tml("factorial(0 1).").
+% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp/a_1000_9.tml:26
+% adding(factorial(0, 1)).
+:- add_tml("factorial(?a ?b) :- ?a<9, ?c + 1 = ?a, factorial(?c ?d), ?a * ?d = ?b.").
+% asserting(factorial(0, 1)).
+% /opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp/a_1000_9.tml:27
+% adding((factorial(_42672, _42674):-_42672#<9, _42702+1#=_42672, factorial(_42702, _42716), _42672*_42716#=_42674)).
+% asserting((factorial(_52516, _52518):-factorial(_52528, _52530), (_52546=9, clpfd_geq(_52546, _52516+1)), (integer(_52528)->(var(_52516)->_52516 is _52528+1;integer(_52516)->_52528+1=:=_52516;_52648 is _52528+1, clpfd_equal(_52648, _52516));integer(_52516)->_52648=_52516, clpfd_equal(_52528+1, _52648);clpfd_equal(_52528+1, _52516)), (integer(_52516), integer(_52530)->_52518 is _52516*_52530;clpfd_equal(_52516*_52530, _52518)))).
+
+:- listing(factorial/2).
+/*
+:- table factorial/2 as variant.
+:- dynamic factorial/2.
+
+factorial(0, 1).
+factorial(B, F) :-
+    factorial(C, E),
+    A=9,
+    clpfd:clpfd_geq(A, B+1),
+    (   integer(C)
+    ->  (   var(B)
+        ->  B is C+1
+        ;   integer(B)
+        ->  C+1=:=B
+        ;   D is C+1,
+            clpfd:clpfd_equal(D, B)
+        )
+    ;   integer(B)
+    ->  D=B,
+        clpfd:clpfd_equal(C+1, D)
+    ;   clpfd:clpfd_equal(C+1, B)
+    ),
+    (   integer(B),
+        integer(E)
+    ->  F is B*E
+    ;   clpfd:clpfd_equal(B*E, F)
+    ).
+*/
+
+:- show_results(factorial(_X,_Y)).
+
+/*   
+
+RESULTING OUTPUT
+user:factorial(3,6).
+user:factorial(2,2).
+user:factorial(1,1).
+user:factorial(0,1).
+user:factorial(7,5040).
+user:factorial(6,720).
+user:factorial(5,120).
+user:factorial(4,24).
+user:factorial(8,40320).
+% 1,344 inferences, 0.000 CPU in 0.000 seconds (100% CPU, 3753267 Lips)
+
+*/
+
+
+  
