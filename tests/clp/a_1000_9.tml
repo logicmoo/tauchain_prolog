@@ -26,7 +26,7 @@ add_tml(Str):- parse_tml(Str,P),maplist(assert_tml,P).
 :- add_tml("factorial(0 1).").
 % /opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp/a_1000_9.tml:26
 % adding(factorial(0, 1)).
-:- add_tml("factorial(?a ?b) :- ?a<9, ?c + 1 = ?a, factorial(?c ?d), ?a * ?d = ?b.").
+:- add_tml("factorial(?a ?b) :- ?a=<7, ?c + 1 = ?a, factorial(?c ?d), ?a * ?d = ?b.").
 % asserting(factorial(0, 1)).
 % /opt/logicmoo_workspace/packs_sys/tauchain_prolog/tests/clp/a_1000_9.tml:27
 % adding((factorial(_42672, _42674):-_42672#<9, _42702+1#=_42672, factorial(_42702, _42716), _42672*_42716#=_42674)).
@@ -75,9 +75,28 @@ user:factorial(7,5040).
 user:factorial(6,720).
 user:factorial(5,120).
 user:factorial(4,24).
-user:factorial(8,40320).
-% 1,344 inferences, 0.000 CPU in 0.000 seconds (100% CPU, 3753267 Lips)
+% 1,177 inferences, 0.000 CPU in 0.000 seconds (100% CPU, 4118971 Lips)
+<mr_tau> # elapsed: 34019.33 ms
+<mr_tau> # More than 5 lines in the output. Truncating. See full output here: http://tau.builders/taubot/idni_gram_bot/a/1579270447.tml.txt.
 
+?- statistics.
+% Started at Fri Jan 17 10:06:39 2020
+% 1.775 seconds cpu time for 8,690,301 inferences
+% 9,913 atoms, 8,228 functors, 7,799 predicates, 154 modules, 333,196 VM-codes
+%
+%                     Limit   Allocated      In use
+% Local  stack:           -       20 Kb    2,208  b
+% Global stack:           -      508 Kb      269 Kb
+% Trail  stack:           -       30 Kb    4,648  b
+%        Total:    1,024 Mb      558 Kb      276 Kb
+%
+% 26 garbage collections gained 6,465,832 bytes in 0.004 seconds.
+% 24 atom garbage collections gained 10,941 atoms in 0.017 seconds.
+% 25 clause garbage collections gained 468 clauses in 0.000 seconds.
+% Stack shifts: 4 local, 3 global, 4 trail in 0.001 seconds
+% 2 threads, 0 finished threads used 0.000 seconds
+
+<mr_tau> # Total elapsed: 34178 ms user: 33.01 s system: 1.06 s memory: 944840 Kb
 */
 
 

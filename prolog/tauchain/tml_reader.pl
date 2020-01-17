@@ -90,6 +90,8 @@ rewrite_functor(_FromL,tml(_),(\+),(~)).
 rewrite_functor(_FromL,clp(_),(=),('#=')).
 rewrite_functor(_FromL,clp(_),(<),('#<')).
 rewrite_functor(_FromL,clp(_),(>),('#>')).
+rewrite_functor(_FromL,clp(_),(>=),('#>=')).
+rewrite_functor(_FromL,clp(_),(=<),('#=<')).
 rewrite_functor(_FromL,clp(_),(:-),(':-')).
 rewrite_functor(tml(_),NTML, (:-), ('==>')):- NTML \= tml(_), !.
 rewrite_functor(FromL,To,From,To):- clause(rewrite_functor(To,FromL,To,From),Body), Body \= (clause(_,_),_), Body,!.
