@@ -1,5 +1,5 @@
 name(tauchain_prolog).
-version('1.2.111').
+version('1.4.111').
 author('Douglas R. Miles','logicmoo@gmail.com').
 title('Tauchain implemented in Prolog - See IDNI.org Tauchain').
 keywords([tauchain,tml,logicmoo]).
