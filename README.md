@@ -13,10 +13,6 @@ space terms, and allowing negation to be feasible even over large universes. In
 fact negated bodies, as below, do not consume more time or space than positive
 bodies by any means, thanks to the BDD mechanism.
 
-## Not Implemented Yet
-Not everything on this document is implemented though implementation is ongoing
-and everything is expected to be implemented in a matter of weeks. Besides there
-is no release yet as tests and final finishes have not been done yet.
 
 Specifically:
 * Proof extraction needs a rewrite.
